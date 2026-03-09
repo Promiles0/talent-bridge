@@ -11,8 +11,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { MessageSquare, Send } from "lucide-react";
+import { MessageSquare, Send, User } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function EmployerApplications() {
   const { user } = useAuth();
@@ -34,7 +35,7 @@ export default function EmployerApplications() {
     queryFn: async () => {
       const { data } = await supabase
         .from("applications")
-        .select("*, internships!inner(title, company_id), students(headline, university, user_id)")
+        .select("*, internships!inner(title, company_id), students(id, headline, university, user_id)")
         .eq("internships.company_id", company!.id)
         .order("created_at", { ascending: false });
       return data ?? [];
@@ -92,7 +93,16 @@ export default function EmployerApplications() {
                 <CardContent className="py-4">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex-1">
-                      <p className="font-medium">{app.students?.headline || "Student"}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium">{app.students?.headline || "Student"}</p>
+                        {app.students?.id && (
+                          <Button asChild variant="ghost" size="sm" className="h-6 px-2">
+                            <Link to={`/students/${app.students.id}`}>
+                              <User className="h-3 w-3 mr-1" /> View Profile
+                            </Link>
+                          </Button>
+                        )}
+                      </div>
                       <p className="text-sm text-muted-foreground">
                         {app.students?.university} · Applied for {app.internships?.title}
                       </p>
@@ -141,7 +151,6 @@ export default function EmployerApplications() {
         )}
       </div>
 
-      {/* Message Dialog */}
       <Dialog open={msgDialog.open} onOpenChange={(o) => setMsgDialog({ ...msgDialog, open: o })}>
         <DialogContent>
           <DialogHeader>
