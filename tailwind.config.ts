@@ -85,6 +85,10 @@ export default {
           "50%": { backgroundPosition: "40% 60%, 60% 30%, 50% 50%, 0% 0%" },
           "100%": { backgroundPosition: "100% 100%, 0% 0%, 50% 50%, 0% 0%" },
         },
+        "blob-drift": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "50%": { transform: "translate(5%, 5%) scale(1.05)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
