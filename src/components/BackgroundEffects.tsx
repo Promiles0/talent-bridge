@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "./ThemeProvider";
+import { ParticleNetwork } from "./ParticleNetwork";
 
 export function BackgroundEffects() {
   const { theme } = useTheme();
@@ -17,8 +18,10 @@ export function BackgroundEffects() {
   const isDark = theme === "dark";
 
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
-      {/* Amber blob - left side */}
+    <>
+      <ParticleNetwork />
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
+        {/* Amber blob - left side */}
       <div
         className="floating-blob absolute rounded-full blur-3xl"
         style={{
@@ -110,5 +113,6 @@ export function BackgroundEffects() {
         }
       `}</style>
     </div>
+    </>
   );
 }
