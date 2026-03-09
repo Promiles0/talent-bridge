@@ -15,7 +15,7 @@ export default function StudentMessages() {
     queryFn: async () => {
       const { data } = await supabase
         .from("messages")
-        .select("*, profiles!messages_sender_id_fkey(full_name)")
+        .select("*")
         .or(`sender_id.eq.${user!.id},receiver_id.eq.${user!.id}`)
         .order("created_at", { ascending: false });
       return data ?? [];
