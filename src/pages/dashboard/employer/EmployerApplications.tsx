@@ -28,7 +28,7 @@ export default function EmployerApplications() {
     queryFn: async () => {
       const { data } = await supabase
         .from("applications")
-        .select("*, internships!inner(title, company_id), students(headline, university, user_id, profiles:students_user_id_fkey(full_name))")
+        .select("*, internships!inner(title, company_id), students(headline, university)")
         .eq("internships.company_id", company!.id)
         .order("created_at", { ascending: false });
       return data ?? [];
