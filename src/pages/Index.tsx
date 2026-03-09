@@ -6,6 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Briefcase, Users, ArrowRight, MapPin, Building2, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
+import { TypewriterEffect } from "@/components/TypewriterEffect";
+import { SkillsShowcase } from "@/components/SkillsShowcase";
+import { ContactForm } from "@/components/ContactForm";
+import { motion } from "framer-motion";
 
 const featuredInternships = [
   { id: 1, title: "Frontend Developer Intern", company: "Irembo", location: "Kigali", type: "Hybrid", stipend: "150,000 RWF/mo" },
@@ -31,16 +35,29 @@ export default function Index() {
       <PageTransition>
         {/* Hero */}
         <section className="relative container mx-auto px-4 pt-20 pb-16 text-center section-hero">
-          <h1 className="font-heading text-4xl md:text-6xl font-bold tracking-tight mb-4">
-            Connect <span className="text-primary">Talent</span> with{" "}
-            <span className="text-secondary">Opportunity</span>
-          </h1>
-          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10">
-            Rwanda's career network for students and employers. Find internships, showcase your skills, and build your future.
-          </p>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <h1 className="font-heading text-4xl md:text-6xl font-bold tracking-tight mb-4">
+              Discover{" "}
+              <TypewriterEffect />
+              <br />
+              in <span className="text-secondary">Rwanda</span>
+            </h1>
+            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10">
+              Rwanda's career network for students and employers. Find internships, showcase your skills, and build your future.
+            </p>
+          </motion.div>
 
           {/* Dual search */}
-          <div className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto mb-6"
+          >
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search internships..." className="pl-9 h-12 bg-card" />
@@ -52,20 +69,25 @@ export default function Index() {
             <Button size="lg" className="h-12 px-6">
               <Search className="h-4 w-4 mr-2" /> Search
             </Button>
-          </div>
+          </motion.div>
 
-          <div className="flex justify-center gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="flex justify-center gap-4"
+          >
             <Link to="/signup">
-              <Button size="lg" variant="outline">
+              <Button size="lg" variant="outline" className="hover-scale">
                 Join as Student <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
             <Link to="/signup">
-              <Button size="lg" variant="outline" className="border-secondary/30 text-secondary hover:bg-secondary/10">
+              <Button size="lg" variant="outline" className="border-secondary/30 text-secondary hover:bg-secondary/10 hover-scale">
                 Post an Internship <Briefcase className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-          </div>
+          </motion.div>
         </section>
 
         {/* Value props */}
@@ -80,6 +102,9 @@ export default function Index() {
             ))}
           </div>
         </section>
+
+        {/* Skills Showcase */}
+        <SkillsShowcase />
 
         {/* Featured internships */}
         <section className="relative container mx-auto px-4 pb-16 section-listings">
@@ -115,7 +140,7 @@ export default function Index() {
         </section>
 
         {/* Featured students */}
-        <section className="relative container mx-auto px-4 pb-20 section-students">
+        <section className="relative container mx-auto px-4 pb-16 section-students">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-heading text-2xl font-bold">Featured Students</h2>
             <Link to="/students" className="text-sm text-primary hover:underline flex items-center gap-1">
@@ -144,6 +169,9 @@ export default function Index() {
             ))}
           </div>
         </section>
+
+        {/* Contact Form */}
+        <ContactForm />
       </PageTransition>
     </Layout>
   );

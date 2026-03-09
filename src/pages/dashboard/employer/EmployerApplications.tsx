@@ -1,18 +1,24 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { EmployerSidebar } from "@/components/EmployerSidebar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { MessageSquare, Send } from "lucide-react";
+import { useState } from "react";
 
 export default function EmployerApplications() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [msgDialog, setMsgDialog] = useState<{ open: boolean; studentUserId: string; studentName: string }>({ open: false, studentUserId: "", studentName: "" });
+  const [msgContent, setMsgContent] = useState("");
 
   const { data: company } = useQuery({
     queryKey: ["company", user?.id],
@@ -28,7 +34,7 @@ export default function EmployerApplications() {
     queryFn: async () => {
       const { data } = await supabase
         .from("applications")
-        .select("*, internships!inner(title, company_id), students(headline, university)")
+        .select("*, internships!inner(title, company_id), students(headline, university, user_id)")
         .eq("internships.company_id", company!.id)
         .order("created_at", { ascending: false });
       return data ?? [];
@@ -44,6 +50,24 @@ export default function EmployerApplications() {
     onSuccess: () => {
       toast.success("Status updated");
       queryClient.invalidateQueries({ queryKey: ["employer-applications-full"] });
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  const sendMessage = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("messages").insert({
+        sender_id: user!.id,
+        receiver_id: msgDialog.studentUserId,
+        content: msgContent,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(`Message sent to ${msgDialog.studentName}`);
+      setMsgContent("");
+      setMsgDialog({ open: false, studentUserId: "", studentName: "" });
+      queryClient.invalidateQueries({ queryKey: ["employer-messages"] });
     },
     onError: (err: any) => toast.error(err.message),
   });
@@ -66,8 +90,8 @@ export default function EmployerApplications() {
             {applications.map((app: any) => (
               <Card key={app.id}>
                 <CardContent className="py-4">
-                  <div className="flex items-center justify-between">
-                    <div>
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1">
                       <p className="font-medium">{app.students?.headline || "Student"}</p>
                       <p className="text-sm text-muted-foreground">
                         {app.students?.university} · Applied for {app.internships?.title}
@@ -79,21 +103,36 @@ export default function EmployerApplications() {
                         <p className="text-sm mt-2 bg-muted/50 p-2 rounded">{app.cover_letter}</p>
                       )}
                     </div>
-                    <Select
-                      value={app.status}
-                      onValueChange={(v) => updateStatus.mutate({ id: app.id, status: v })}
-                    >
-                      <SelectTrigger className="w-[140px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="applied">Applied</SelectItem>
-                        <SelectItem value="shortlisted">Shortlisted</SelectItem>
-                        <SelectItem value="interview">Interview</SelectItem>
-                        <SelectItem value="offered">Offered</SelectItem>
-                        <SelectItem value="rejected">Rejected</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setMsgDialog({
+                            open: true,
+                            studentUserId: app.students?.user_id ?? "",
+                            studentName: app.students?.headline || "Student",
+                          })
+                        }
+                      >
+                        <MessageSquare className="h-4 w-4 mr-1" /> Message
+                      </Button>
+                      <Select
+                        value={app.status}
+                        onValueChange={(v) => updateStatus.mutate({ id: app.id, status: v })}
+                      >
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="applied">Applied</SelectItem>
+                          <SelectItem value="shortlisted">Shortlisted</SelectItem>
+                          <SelectItem value="interview">Interview</SelectItem>
+                          <SelectItem value="offered">Offered</SelectItem>
+                          <SelectItem value="rejected">Rejected</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -101,6 +140,31 @@ export default function EmployerApplications() {
           </div>
         )}
       </div>
+
+      {/* Message Dialog */}
+      <Dialog open={msgDialog.open} onOpenChange={(o) => setMsgDialog({ ...msgDialog, open: o })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Message {msgDialog.studentName}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Textarea
+              value={msgContent}
+              onChange={(e) => setMsgContent(e.target.value)}
+              placeholder="Write your message..."
+              rows={4}
+            />
+            <Button
+              onClick={() => sendMessage.mutate()}
+              disabled={!msgContent.trim() || sendMessage.isPending}
+              className="w-full"
+            >
+              <Send className="h-4 w-4 mr-1" />
+              {sendMessage.isPending ? "Sending..." : "Send Message"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 }

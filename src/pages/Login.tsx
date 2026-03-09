@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -14,8 +14,16 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, user, role, loading } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!loading && user && role) {
+      const path = role === "admin" ? "/dashboard/admin" : role === "employer" ? "/dashboard/employer" : "/dashboard/student";
+      navigate(path, { replace: true });
+    }
+  }, [user, role, loading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +34,7 @@ export default function Login() {
       toast.error(error.message);
     } else {
       toast.success("Welcome back!");
-      navigate("/");
+      // Role-based redirect will happen via useEffect when role is loaded
     }
   };
 
