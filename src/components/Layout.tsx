@@ -12,8 +12,8 @@ export function Layout({ children }: { children: ReactNode }) {
       <Navbar />
       <main
         className={cn(
-          "flex-1",
-          theme === "dark" ? "dot-grid" : "gradient-mesh"
+          "flex-1 noise-overlay",
+          theme === "dark" ? "bg-immersive-dark" : "bg-immersive-light"
         )}
       >
         {children}
