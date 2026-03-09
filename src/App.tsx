@@ -19,6 +19,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const StudentPublicProfile = lazy(() => import("./pages/StudentPublicProfile"));
 
 // Student Dashboard
 const StudentOverview = lazy(() => import("./pages/dashboard/student/StudentOverview"));
