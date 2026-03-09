@@ -1,9 +1,11 @@
-import { Link, useLocation } from "react-router-dom";
-import { Sun, Moon, Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Sun, Moon, Menu, X, LogOut } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "./ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const navLinks = [
   { label: "Students", href: "/students" },
@@ -14,19 +16,25 @@ const navLinks = [
 
 export function Navbar() {
   const { theme, toggleTheme } = useTheme();
+  const { user, loading, signOut } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Signed out");
+    navigate("/");
+  };
 
   return (
     <nav className="sticky top-0 z-50 glass-card border-b border-border">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Wordmark */}
         <Link to="/" className="flex items-center gap-0 font-heading text-xl font-bold tracking-tight">
           <span className="text-foreground">Talent</span>
           <span className="text-primary">Bridge</span>
         </Link>
 
-        {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => (
             <Link
@@ -44,20 +52,28 @@ export function Navbar() {
           ))}
         </div>
 
-        {/* Right side */}
         <div className="hidden md:flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
-          <Link to="/login">
-            <Button variant="ghost" size="sm">Log in</Button>
-          </Link>
-          <Link to="/signup">
-            <Button size="sm">Sign Up</Button>
-          </Link>
+          {!loading && (
+            user ? (
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4 mr-1" /> Sign out
+              </Button>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="ghost" size="sm">Log in</Button>
+                </Link>
+                <Link to="/signup">
+                  <Button size="sm">Sign Up</Button>
+                </Link>
+              </>
+            )
+          )}
         </div>
 
-        {/* Mobile toggle */}
         <div className="flex md:hidden items-center gap-2">
           <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -68,7 +84,6 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden border-t border-border glass-card px-4 pb-4 pt-2 space-y-1">
           {navLinks.map((link) => (
@@ -87,12 +102,22 @@ export function Navbar() {
             </Link>
           ))}
           <div className="flex gap-2 pt-2">
-            <Link to="/login" className="flex-1" onClick={() => setMobileOpen(false)}>
-              <Button variant="outline" size="sm" className="w-full">Log in</Button>
-            </Link>
-            <Link to="/signup" className="flex-1" onClick={() => setMobileOpen(false)}>
-              <Button size="sm" className="w-full">Sign Up</Button>
-            </Link>
+            {!loading && (
+              user ? (
+                <Button variant="outline" size="sm" className="w-full" onClick={() => { setMobileOpen(false); handleSignOut(); }}>
+                  <LogOut className="h-4 w-4 mr-1" /> Sign out
+                </Button>
+              ) : (
+                <>
+                  <Link to="/login" className="flex-1" onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" size="sm" className="w-full">Log in</Button>
+                  </Link>
+                  <Link to="/signup" className="flex-1" onClick={() => setMobileOpen(false)}>
+                    <Button size="sm" className="w-full">Sign Up</Button>
+                  </Link>
+                </>
+              )
+            )}
           </div>
         </div>
       )}
