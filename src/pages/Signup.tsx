@@ -4,13 +4,38 @@ import { GlassCard } from "@/components/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { GraduationCap, Building2 } from "lucide-react";
+import { GraduationCap, Building2, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 export default function Signup() {
   const [role, setRole] = useState<"student" | "employer">("student");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await signUp(email, password, fullName, role);
+    setSubmitting(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Check your email to confirm your account!");
+      navigate("/login");
+    }
+  };
 
   return (
     <Layout>
@@ -48,20 +73,21 @@ export default function Signup() {
               </button>
             </div>
 
-            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
-                <Input id="name" placeholder="Your full name" className="bg-background" />
+                <Input id="name" placeholder="Your full name" className="bg-background" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="you@example.com" className="bg-background" />
+                <Input id="email" type="email" placeholder="you@example.com" className="bg-background" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="••••••••" className="bg-background" />
+                <Input id="password" type="password" placeholder="••••••••" className="bg-background" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" disabled={submitting}>
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                 Sign up as {role === "student" ? "Student" : "Employer"}
               </Button>
             </form>
