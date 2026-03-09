@@ -30,7 +30,7 @@ export default function Index() {
     <Layout>
       <PageTransition>
         {/* Hero */}
-        <section className="container mx-auto px-4 pt-20 pb-16 text-center">
+        <section className="relative container mx-auto px-4 pt-20 pb-16 text-center section-hero">
           <h1 className="font-heading text-4xl md:text-6xl font-bold tracking-tight mb-4">
             Connect <span className="text-primary">Talent</span> with{" "}
             <span className="text-secondary">Opportunity</span>
@@ -69,7 +69,7 @@ export default function Index() {
         </section>
 
         {/* Value props */}
-        <section className="container mx-auto px-4 pb-16">
+        <section className="relative container mx-auto px-4 pb-16 section-features">
           <div className="grid md:grid-cols-3 gap-6">
             {valueProps.map((vp, i) => (
               <GlassCard key={vp.title} delay={i * 0.05} hover={false}>
@@ -82,7 +82,7 @@ export default function Index() {
         </section>
 
         {/* Featured internships */}
-        <section className="container mx-auto px-4 pb-16">
+        <section className="relative container mx-auto px-4 pb-16 section-listings">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-heading text-2xl font-bold">Featured Internships</h2>
             <Link to="/internships" className="text-sm text-primary hover:underline flex items-center gap-1">
@@ -115,7 +115,7 @@ export default function Index() {
         </section>
 
         {/* Featured students */}
-        <section className="container mx-auto px-4 pb-20">
+        <section className="relative container mx-auto px-4 pb-20 section-students">
           <div className="flex items-center justify-between mb-6">
             <h2 className="font-heading text-2xl font-bold">Featured Students</h2>
             <Link to="/students" className="text-sm text-primary hover:underline flex items-center gap-1">
