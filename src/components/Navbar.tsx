@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Sun, Moon, Menu, X, LogOut } from "lucide-react";
+import { Sun, Moon, Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "./ui/button";
@@ -16,10 +16,16 @@ const navLinks = [
 
 export function Navbar() {
   const { theme, toggleTheme } = useTheme();
-  const { user, loading, signOut } = useAuth();
+  const { user, role, loading, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const getDashboardPath = () => {
+    if (role === "admin") return "/dashboard/admin";
+    if (role === "employer") return "/dashboard/employer";
+    return "/dashboard/student";
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -57,11 +63,18 @@ export function Navbar() {
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
           {!loading && (
-            user ? (
-              <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 mr-1" /> Sign out
-              </Button>
-            ) : (
+              user ? (
+                <>
+                  <Link to={getDashboardPath()}>
+                    <Button variant="ghost" size="sm">
+                      <LayoutDashboard className="h-4 w-4 mr-1" /> Dashboard
+                    </Button>
+                  </Link>
+                  <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                    <LogOut className="h-4 w-4 mr-1" /> Sign out
+                  </Button>
+                </>
+              ) : (
               <>
                 <Link to="/login">
                   <Button variant="ghost" size="sm">Log in</Button>
@@ -104,9 +117,16 @@ export function Navbar() {
           <div className="flex gap-2 pt-2">
             {!loading && (
               user ? (
-                <Button variant="outline" size="sm" className="w-full" onClick={() => { setMobileOpen(false); handleSignOut(); }}>
-                  <LogOut className="h-4 w-4 mr-1" /> Sign out
-                </Button>
+                <>
+                  <Link to={getDashboardPath()} className="flex-1" onClick={() => setMobileOpen(false)}>
+                    <Button variant="outline" size="sm" className="w-full">
+                      <LayoutDashboard className="h-4 w-4 mr-1" /> Dashboard
+                    </Button>
+                  </Link>
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => { setMobileOpen(false); handleSignOut(); }}>
+                    <LogOut className="h-4 w-4 mr-1" /> Sign out
+                  </Button>
+                </>
               ) : (
                 <>
                   <Link to="/login" className="flex-1" onClick={() => setMobileOpen(false)}>
