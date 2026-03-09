@@ -1,14 +1,20 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { EmployerSidebar } from "@/components/EmployerSidebar";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Send } from "lucide-react";
+import { useState } from "react";
 
 export default function EmployerMessages() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [replyTo, setReplyTo] = useState<string | null>(null);
+  const [replyContent, setReplyContent] = useState("");
 
   const { data: messages, isLoading } = useQuery({
     queryKey: ["employer-messages", user?.id],
@@ -21,6 +27,42 @@ export default function EmployerMessages() {
       return data ?? [];
     },
     enabled: !!user,
+  });
+
+  const senderIds = [...new Set(messages?.filter(m => m.sender_id !== user?.id).map(m => m.sender_id) ?? [])];
+  const { data: profiles } = useQuery({
+    queryKey: ["msg-profiles", senderIds],
+    queryFn: async () => {
+      if (!senderIds.length) return [];
+      const { data } = await supabase.from("profiles").select("id, full_name").in("id", senderIds);
+      return data ?? [];
+    },
+    enabled: senderIds.length > 0,
+  });
+
+  const getProfileName = (id: string) => profiles?.find(p => p.id === id)?.full_name || "User";
+
+  const sendReply = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("messages").insert({
+        sender_id: user!.id,
+        receiver_id: replyTo!,
+        content: replyContent,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setReplyContent("");
+      setReplyTo(null);
+      queryClient.invalidateQueries({ queryKey: ["employer-messages"] });
+    },
+  });
+
+  const markRead = useMutation({
+    mutationFn: async (id: string) => {
+      await supabase.from("messages").update({ read: true }).eq("id", id);
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["employer-messages"] }),
   });
 
   return (
@@ -39,17 +81,57 @@ export default function EmployerMessages() {
           </CardContent></Card>
         ) : (
           <div className="space-y-2">
-            {messages.map((msg: any) => (
-              <Card key={msg.id}>
-                <CardContent className="py-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-sm font-medium">{msg.sender_id === user?.id ? "You" : "Student"}</p>
-                    <span className="text-xs text-muted-foreground">{format(new Date(msg.created_at), "MMM d, h:mm a")}</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{msg.content}</p>
-                </CardContent>
-              </Card>
-            ))}
+            {messages.map((msg: any) => {
+              const isReceived = msg.receiver_id === user?.id;
+              return (
+                <Card
+                  key={msg.id}
+                  className={!msg.read && isReceived ? "border-primary/30" : ""}
+                  onClick={() => { if (!msg.read && isReceived) markRead.mutate(msg.id); }}
+                >
+                  <CardContent className="py-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-sm font-medium">
+                        {msg.sender_id === user?.id ? "You" : getProfileName(msg.sender_id)}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        {!msg.read && isReceived && <span className="h-2 w-2 rounded-full bg-primary" />}
+                        <span className="text-xs text-muted-foreground">
+                          {format(new Date(msg.created_at), "MMM d, h:mm a")}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{msg.content}</p>
+                    {isReceived && (
+                      <div className="mt-2">
+                        {replyTo === msg.sender_id ? (
+                          <div className="flex gap-2 mt-1">
+                            <Textarea
+                              value={replyContent}
+                              onChange={(e) => setReplyContent(e.target.value)}
+                              placeholder="Type your reply..."
+                              rows={2}
+                              className="flex-1"
+                            />
+                            <Button
+                              size="sm"
+                              onClick={() => sendReply.mutate()}
+                              disabled={!replyContent.trim() || sendReply.isPending}
+                            >
+                              <Send className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button variant="ghost" size="sm" className="text-xs" onClick={() => setReplyTo(msg.sender_id)}>
+                            Reply
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>
