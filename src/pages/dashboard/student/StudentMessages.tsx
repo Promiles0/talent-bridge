@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { MessageSquare, Send } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function StudentMessages() {
   const { user } = useAuth();
@@ -29,7 +29,25 @@ export default function StudentMessages() {
     enabled: !!user,
   });
 
-  // Fetch profiles for sender names
+  // Realtime subscription
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel("student-messages-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "messages", filter: `receiver_id=eq.${user.id}` },
+        () => queryClient.invalidateQueries({ queryKey: ["student-messages"] })
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "messages", filter: `sender_id=eq.${user.id}` },
+        () => queryClient.invalidateQueries({ queryKey: ["student-messages"] })
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, queryClient]);
+
   const senderIds = [...new Set(messages?.filter(m => m.sender_id !== user?.id).map(m => m.sender_id) ?? [])];
   const { data: profiles } = useQuery({
     queryKey: ["sender-profiles", senderIds],
@@ -55,19 +73,16 @@ export default function StudentMessages() {
     onSuccess: () => {
       setReplyContent("");
       setReplyTo(null);
-      queryClient.invalidateQueries({ queryKey: ["student-messages"] });
     },
     onError: (err: any) => {
       import("sonner").then(({ toast }) => toast.error(err.message));
     },
   });
 
-  // Mark messages as read
   const markRead = useMutation({
     mutationFn: async (id: string) => {
       await supabase.from("messages").update({ read: true }).eq("id", id);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["student-messages"] }),
   });
 
   return (

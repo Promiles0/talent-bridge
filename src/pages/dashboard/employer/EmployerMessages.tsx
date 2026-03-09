@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { MessageSquare, Send } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function EmployerMessages() {
   const { user } = useAuth();
@@ -28,6 +28,25 @@ export default function EmployerMessages() {
     },
     enabled: !!user,
   });
+
+  // Realtime subscription
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel("employer-messages-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "messages", filter: `receiver_id=eq.${user.id}` },
+        () => queryClient.invalidateQueries({ queryKey: ["employer-messages"] })
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "messages", filter: `sender_id=eq.${user.id}` },
+        () => queryClient.invalidateQueries({ queryKey: ["employer-messages"] })
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, queryClient]);
 
   const senderIds = [...new Set(messages?.filter(m => m.sender_id !== user?.id).map(m => m.sender_id) ?? [])];
   const { data: profiles } = useQuery({
@@ -54,7 +73,6 @@ export default function EmployerMessages() {
     onSuccess: () => {
       setReplyContent("");
       setReplyTo(null);
-      queryClient.invalidateQueries({ queryKey: ["employer-messages"] });
     },
   });
 
@@ -62,7 +80,6 @@ export default function EmployerMessages() {
     mutationFn: async (id: string) => {
       await supabase.from("messages").update({ read: true }).eq("id", id);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["employer-messages"] }),
   });
 
   return (
