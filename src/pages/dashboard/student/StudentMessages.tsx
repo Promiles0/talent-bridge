@@ -58,8 +58,7 @@ export default function StudentMessages() {
       queryClient.invalidateQueries({ queryKey: ["student-messages"] });
     },
     onError: (err: any) => {
-      const { toast } = await import("sonner");
-      toast.error(err.message);
+      import("sonner").then(({ toast }) => toast.error(err.message));
     },
   });
 
