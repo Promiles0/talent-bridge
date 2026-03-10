@@ -100,7 +100,10 @@ export default function StudentOverview() {
           </CardHeader>
           <CardContent>
             {!applications?.length ? (
-              <p className="text-sm text-muted-foreground">No applications yet. Start exploring internships!</p>
+              <div className="py-6 text-center">
+                <Briefcase className="h-10 w-10 text-muted-foreground/40 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">No applications yet. Start exploring internships!</p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {applications.map((app: any) => (

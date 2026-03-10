@@ -89,7 +89,10 @@ export default function EmployerOverview() {
           <CardHeader><CardTitle className="text-lg">Recent Applications</CardTitle></CardHeader>
           <CardContent>
             {!applications?.length ? (
-              <p className="text-sm text-muted-foreground">No applications received yet.</p>
+              <div className="py-6 text-center">
+                <Users className="h-10 w-10 text-muted-foreground/40 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">No applications received yet. Post an internship to attract talent!</p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {applications.map((app: any) => (

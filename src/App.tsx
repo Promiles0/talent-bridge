@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { lazy, Suspense } from "react";
 
 const Index = lazy(() => import("./pages/Index"));
@@ -67,24 +68,24 @@ const App = () => (
                 <Route path="/privacy" element={<Privacy />} />
 
                 {/* Student Dashboard */}
-                <Route path="/dashboard/student" element={<StudentOverview />} />
-                <Route path="/dashboard/student/profile" element={<StudentProfile />} />
-                <Route path="/dashboard/student/applications" element={<StudentApplications />} />
-                <Route path="/dashboard/student/projects" element={<StudentProjects />} />
-                <Route path="/dashboard/student/messages" element={<StudentMessages />} />
+                <Route path="/dashboard/student" element={<ProtectedRoute requiredRole="student"><StudentOverview /></ProtectedRoute>} />
+                <Route path="/dashboard/student/profile" element={<ProtectedRoute requiredRole="student"><StudentProfile /></ProtectedRoute>} />
+                <Route path="/dashboard/student/applications" element={<ProtectedRoute requiredRole="student"><StudentApplications /></ProtectedRoute>} />
+                <Route path="/dashboard/student/projects" element={<ProtectedRoute requiredRole="student"><StudentProjects /></ProtectedRoute>} />
+                <Route path="/dashboard/student/messages" element={<ProtectedRoute requiredRole="student"><StudentMessages /></ProtectedRoute>} />
 
                 {/* Employer Dashboard */}
-                <Route path="/dashboard/employer" element={<EmployerOverview />} />
-                <Route path="/dashboard/employer/company" element={<EmployerCompany />} />
-                <Route path="/dashboard/employer/internships" element={<EmployerInternships />} />
-                <Route path="/dashboard/employer/applications" element={<EmployerApplications />} />
-                <Route path="/dashboard/employer/messages" element={<EmployerMessages />} />
+                <Route path="/dashboard/employer" element={<ProtectedRoute requiredRole="employer"><EmployerOverview /></ProtectedRoute>} />
+                <Route path="/dashboard/employer/company" element={<ProtectedRoute requiredRole="employer"><EmployerCompany /></ProtectedRoute>} />
+                <Route path="/dashboard/employer/internships" element={<ProtectedRoute requiredRole="employer"><EmployerInternships /></ProtectedRoute>} />
+                <Route path="/dashboard/employer/applications" element={<ProtectedRoute requiredRole="employer"><EmployerApplications /></ProtectedRoute>} />
+                <Route path="/dashboard/employer/messages" element={<ProtectedRoute requiredRole="employer"><EmployerMessages /></ProtectedRoute>} />
 
                 {/* Admin Dashboard */}
-                <Route path="/dashboard/admin" element={<AdminOverview />} />
-                <Route path="/dashboard/admin/users" element={<AdminUsers />} />
-                <Route path="/dashboard/admin/flags" element={<AdminFlags />} />
-                <Route path="/dashboard/admin/analytics" element={<AdminAnalytics />} />
+                <Route path="/dashboard/admin" element={<ProtectedRoute requiredRole="admin"><AdminOverview /></ProtectedRoute>} />
+                <Route path="/dashboard/admin/users" element={<ProtectedRoute requiredRole="admin"><AdminUsers /></ProtectedRoute>} />
+                <Route path="/dashboard/admin/flags" element={<ProtectedRoute requiredRole="admin"><AdminFlags /></ProtectedRoute>} />
+                <Route path="/dashboard/admin/analytics" element={<ProtectedRoute requiredRole="admin"><AdminAnalytics /></ProtectedRoute>} />
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
