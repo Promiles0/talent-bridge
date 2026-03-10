@@ -5,6 +5,7 @@ import { SkillTag } from "@/components/SkillTag";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Search, MapPin, Building2, Filter, Clock, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,11 +16,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "react-router-dom";
 
+const PAGE_SIZE = 9;
+
 export default function Internships() {
   const { user } = useAuth();
   const [query, setQuery] = useState("");
   const [locationFilter, setLocationFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [page, setPage] = useState(1);
   const [applyDialog, setApplyDialog] = useState<{ open: boolean; internshipId: string; title: string }>({ open: false, internshipId: "", title: "" });
   const [coverLetter, setCoverLetter] = useState("");
   const [applying, setApplying] = useState(false);
@@ -45,7 +49,6 @@ export default function Internships() {
     enabled: !!user,
   });
 
-  // Derive unique locations
   const locations = [...new Set(internships?.map(i => i.location).filter(Boolean) ?? [])];
 
   const filtered = (internships ?? []).filter((i: any) => {
@@ -57,15 +60,14 @@ export default function Internships() {
     return matchesQuery && matchesLocation && matchesType;
   });
 
+  // Reset page when filters change
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
   const handleApply = async () => {
-    if (!user) {
-      toast.error("Please log in to apply");
-      return;
-    }
-    if (!studentProfile) {
-      toast.error("Only students can apply for internships");
-      return;
-    }
+    if (!user) { toast.error("Please log in to apply"); return; }
+    if (!studentProfile) { toast.error("Only students can apply for internships"); return; }
     setApplying(true);
     const { error } = await supabase.from("applications").insert({
       student_id: studentProfile.id,
@@ -97,11 +99,11 @@ export default function Internships() {
               <Input
                 placeholder="Search by title or company..."
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => { setQuery(e.target.value); setPage(1); }}
                 className="pl-9 bg-card"
               />
             </div>
-            <Select value={locationFilter} onValueChange={setLocationFilter}>
+            <Select value={locationFilter} onValueChange={(v) => { setLocationFilter(v); setPage(1); }}>
               <SelectTrigger className="w-[160px] bg-card">
                 <MapPin className="h-4 w-4 mr-1 text-muted-foreground" />
                 <SelectValue placeholder="Location" />
@@ -113,7 +115,7 @@ export default function Internships() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <Select value={typeFilter} onValueChange={(v) => { setTypeFilter(v); setPage(1); }}>
               <SelectTrigger className="w-[160px] bg-card">
                 <Filter className="h-4 w-4 mr-1 text-muted-foreground" />
                 <SelectValue placeholder="Work Type" />
@@ -127,49 +129,91 @@ export default function Internships() {
             </Select>
           </div>
 
+          {/* Results count */}
+          {!isLoading && filtered.length > 0 && (
+            <p className="text-sm text-muted-foreground mb-4">
+              Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filtered.length)} of {filtered.length} internship{filtered.length !== 1 ? "s" : ""}
+            </p>
+          )}
+
           {isLoading ? (
             <div className="flex items-center justify-center h-40">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filtered.map((intern: any, i: number) => (
-                <GlassCard key={intern.id} delay={i * 0.05}>
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Building2 className="h-5 w-5 text-primary" />
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {paginated.map((intern: any, i: number) => (
+                  <GlassCard key={intern.id} delay={i * 0.05}>
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Building2 className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-heading font-semibold text-sm">{intern.title}</h3>
+                        <p className="text-xs text-muted-foreground">{intern.companies?.name}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-heading font-semibold text-sm">{intern.title}</h3>
-                      <p className="text-xs text-muted-foreground">{intern.companies?.name}</p>
-                    </div>
-                  </div>
-                  {intern.description && (
-                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{intern.description}</p>
-                  )}
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                      <MapPin className="h-3 w-3" /> {intern.location || "N/A"}
-                    </span>
-                    <SkillTag label={intern.work_type} />
-                    {intern.duration && <SkillTag label={intern.duration} />}
-                    {intern.stipend && <SkillTag label={intern.stipend} />}
-                    {intern.spots && (
-                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                        <Clock className="h-3 w-3" /> {intern.spots} spot{intern.spots > 1 ? "s" : ""}
-                      </span>
+                    {intern.description && (
+                      <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{intern.description}</p>
                     )}
-                  </div>
-                  <Button
-                    size="sm"
-                    className="w-full"
-                    onClick={() => setApplyDialog({ open: true, internshipId: intern.id, title: intern.title })}
-                  >
-                    View & Apply
-                  </Button>
-                </GlassCard>
-              ))}
-            </div>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3" /> {intern.location || "N/A"}
+                      </span>
+                      <SkillTag label={intern.work_type} />
+                      {intern.duration && <SkillTag label={intern.duration} />}
+                      {intern.stipend && <SkillTag label={intern.stipend} />}
+                      {intern.spots && (
+                        <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                          <Clock className="h-3 w-3" /> {intern.spots} spot{intern.spots > 1 ? "s" : ""}
+                        </span>
+                      )}
+                    </div>
+                    <Button
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setApplyDialog({ open: true, internshipId: intern.id, title: intern.title })}
+                    >
+                      View & Apply
+                    </Button>
+                  </GlassCard>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-8">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => setPage(p => Math.max(1, p - 1))}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                        <PaginationItem key={p}>
+                          <PaginationLink
+                            isActive={p === currentPage}
+                            onClick={() => setPage(p)}
+                            className="cursor-pointer"
+                          >
+                            {p}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
           )}
           {!isLoading && filtered.length === 0 && (
             <p className="text-center text-muted-foreground py-12">No internships found matching your search.</p>
