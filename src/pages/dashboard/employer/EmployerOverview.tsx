@@ -5,11 +5,33 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { Building2, Briefcase, Users, Eye } from "lucide-react";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+function AnimatedCounter({ value }: { value: number }) {
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (v) => Math.round(v));
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const controls = animate(count, value, { duration: 1, ease: "easeOut" });
+    return controls.stop;
+  }, [value, count]);
+
+  useEffect(() => {
+    return rounded.on("change", (v) => {
+      if (ref.current) ref.current.textContent = String(v);
+    });
+  }, [rounded]);
+
+  return <span ref={ref}>0</span>;
+}
 
 export default function EmployerOverview() {
   const { user } = useAuth();
 
-  const { data: company } = useQuery({
+  const { data: company, isLoading: loadingCompany } = useQuery({
     queryKey: ["company", user?.id],
     queryFn: async () => {
       const { data } = await supabase.from("companies").select("*").eq("owner_id", user!.id).maybeSingle();
@@ -70,19 +92,35 @@ export default function EmployerOverview() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {stats.map((s) => (
-            <Card key={s.label}>
-              <CardContent className="pt-6">
+          {loadingCompany ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i}><CardContent className="pt-6">
                 <div className="flex items-center gap-3">
-                  <s.icon className={`h-8 w-8 ${s.color}`} />
-                  <div>
-                    <p className="text-2xl font-bold">{s.value}</p>
-                    <p className="text-xs text-muted-foreground">{s.label}</p>
+                  <Skeleton className="h-8 w-8 rounded" />
+                  <div className="space-y-1.5">
+                    <Skeleton className="h-6 w-10" />
+                    <Skeleton className="h-3 w-16" />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+              </CardContent></Card>
+            ))
+          ) : (
+            stats.map((s) => (
+              <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <s.icon className={`h-8 w-8 ${s.color}`} />
+                      <div>
+                        <p className="text-2xl font-bold"><AnimatedCounter value={s.value} /></p>
+                        <p className="text-xs text-muted-foreground">{s.label}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))
+          )}
         </div>
 
         <Card>
