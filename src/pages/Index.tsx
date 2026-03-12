@@ -10,18 +10,9 @@ import { TypewriterEffect } from "@/components/TypewriterEffect";
 import { SkillsShowcase } from "@/components/SkillsShowcase";
 import { ContactForm } from "@/components/ContactForm";
 import { motion } from "framer-motion";
-
-const featuredInternships = [
-  { id: 1, title: "Frontend Developer Intern", company: "Irembo", location: "Kigali", type: "Hybrid", stipend: "150,000 RWF/mo" },
-  { id: 2, title: "Data Analyst Intern", company: "Bank of Kigali", location: "Kigali", type: "On-site", stipend: "200,000 RWF/mo" },
-  { id: 3, title: "UI/UX Design Intern", company: "Andela", location: "Remote", type: "Remote", stipend: null },
-];
-
-const featuredStudents = [
-  { id: 1, name: "Aline Uwase", headline: "Full-Stack Developer", university: "University of Rwanda", skills: ["React", "Node.js", "Python"] },
-  { id: 2, name: "Jean Claude M.", headline: "Data Scientist", university: "CMU Africa", skills: ["Python", "SQL", "Machine Learning"] },
-  { id: 3, name: "Grace Ingabire", headline: "Product Designer", university: "ALU", skills: ["Figma", "UI/UX", "Research"] },
-];
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const valueProps = [
   { icon: GraduationCap, title: "For Students", desc: "Showcase your skills, build your portfolio, and land your dream internship." },
@@ -30,19 +21,67 @@ const valueProps = [
 ];
 
 export default function Index() {
+  const { data: featuredInternships, isLoading: loadingInternships } = useQuery({
+    queryKey: ["featured-internships"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("internships")
+        .select("id, title, location, work_type, stipend, companies(name)")
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(3);
+      return (data ?? []).map((i: any) => ({
+        id: i.id,
+        title: i.title,
+        company: i.companies?.name || "Company",
+        location: i.location || "Rwanda",
+        type: i.work_type,
+        stipend: i.stipend,
+      }));
+    },
+  });
+
+  const { data: featuredStudents, isLoading: loadingStudents } = useQuery({
+    queryKey: ["featured-students"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("students")
+        .select("id, headline, university, profiles(full_name), student_skills(skills(name))")
+        .eq("available", true)
+        .order("created_at", { ascending: false })
+        .limit(3);
+      return (data ?? []).map((s: any) => ({
+        id: s.id,
+        name: s.profiles?.full_name || "Student",
+        headline: s.headline || "",
+        university: s.university || "",
+        skills: s.student_skills?.map((ss: any) => ss.skills?.name).filter(Boolean) ?? [],
+      }));
+    },
+  });
+
+  const CardSkeleton = () => (
+    <div className="p-5 rounded-xl border border-border bg-card space-y-3">
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-10 w-10 rounded-lg" />
+        <div className="space-y-1.5 flex-1">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-3 w-20" />
+        </div>
+      </div>
+      <Skeleton className="h-3 w-24" />
+      <Skeleton className="h-8 w-full" />
+    </div>
+  );
+
   return (
     <Layout>
       <PageTransition>
         {/* Hero */}
         <section className="relative container mx-auto px-4 pt-20 pb-16 text-center section-hero">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
             <h1 className="font-heading text-4xl md:text-6xl font-bold tracking-tight mb-4">
-              Discover{" "}
-              <TypewriterEffect />
+              Discover <TypewriterEffect />
               <br />
               in <span className="text-secondary">Rwanda</span>
             </h1>
@@ -51,13 +90,7 @@ export default function Index() {
             </p>
           </motion.div>
 
-          {/* Dual search */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto mb-6"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search internships..." className="pl-9 h-12 bg-card" />
@@ -71,12 +104,7 @@ export default function Index() {
             </Button>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="flex justify-center gap-4"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }} className="flex justify-center gap-4">
             <Link to="/signup">
               <Button size="lg" variant="outline" className="hover-scale">
                 Join as Student <ArrowRight className="ml-2 h-4 w-4" />
@@ -103,7 +131,6 @@ export default function Index() {
           </div>
         </section>
 
-        {/* Skills Showcase */}
         <SkillsShowcase />
 
         {/* Featured internships */}
@@ -115,27 +142,33 @@ export default function Index() {
             </Link>
           </div>
           <div className="grid md:grid-cols-3 gap-4">
-            {featuredInternships.map((intern, i) => (
-              <GlassCard key={intern.id} delay={i * 0.05}>
-                <div className="flex items-start gap-3 mb-3">
-                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Building2 className="h-5 w-5 text-primary" />
+            {loadingInternships
+              ? Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
+              : (featuredInternships ?? []).length === 0
+              ? <p className="col-span-3 text-center text-muted-foreground py-8">No internships posted yet. Be the first!</p>
+              : (featuredInternships ?? []).map((intern, i) => (
+                <GlassCard key={intern.id} delay={i * 0.05}>
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Building2 className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-heading font-semibold text-sm">{intern.title}</h3>
+                      <p className="text-xs text-muted-foreground">{intern.company}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-heading font-semibold text-sm">{intern.title}</h3>
-                    <p className="text-xs text-muted-foreground">{intern.company}</p>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                      <MapPin className="h-3 w-3" /> {intern.location}
+                    </span>
+                    <SkillTag label={intern.type} />
+                    {intern.stipend && <SkillTag label={intern.stipend} />}
                   </div>
-                </div>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                    <MapPin className="h-3 w-3" /> {intern.location}
-                  </span>
-                  <SkillTag label={intern.type} />
-                  {intern.stipend && <SkillTag label={intern.stipend} />}
-                </div>
-                <Button size="sm" className="w-full">Apply</Button>
-              </GlassCard>
-            ))}
+                  <Button asChild size="sm" className="w-full">
+                    <Link to="/internships">View</Link>
+                  </Button>
+                </GlassCard>
+              ))}
           </div>
         </section>
 
@@ -148,29 +181,32 @@ export default function Index() {
             </Link>
           </div>
           <div className="grid md:grid-cols-3 gap-4">
-            {featuredStudents.map((student, i) => (
-              <GlassCard key={student.id} delay={i * 0.05}>
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="h-10 w-10 rounded-full bg-secondary/10 flex items-center justify-center">
-                    <GraduationCap className="h-5 w-5 text-secondary" />
+            {loadingStudents
+              ? Array.from({ length: 3 }).map((_, i) => <CardSkeleton key={i} />)
+              : (featuredStudents ?? []).length === 0
+              ? <p className="col-span-3 text-center text-muted-foreground py-8">No students have joined yet.</p>
+              : (featuredStudents ?? []).map((student, i) => (
+                <GlassCard key={student.id} delay={i * 0.05}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="h-10 w-10 rounded-full bg-secondary/10 flex items-center justify-center">
+                      <GraduationCap className="h-5 w-5 text-secondary" />
+                    </div>
+                    <div>
+                      <h3 className="font-heading font-semibold text-sm">{student.name}</h3>
+                      <p className="text-xs text-muted-foreground">{student.headline}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-heading font-semibold text-sm">{student.name}</h3>
-                    <p className="text-xs text-muted-foreground">{student.headline}</p>
+                  <p className="text-xs text-muted-foreground mb-3">{student.university}</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {student.skills.map((s: string) => (
+                      <SkillTag key={s} label={s} />
+                    ))}
                   </div>
-                </div>
-                <p className="text-xs text-muted-foreground mb-3">{student.university}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {student.skills.map((s) => (
-                    <SkillTag key={s} label={s} />
-                  ))}
-                </div>
-              </GlassCard>
-            ))}
+                </GlassCard>
+              ))}
           </div>
         </section>
 
-        {/* Contact Form */}
         <ContactForm />
       </PageTransition>
     </Layout>
