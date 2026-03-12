@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { lazy, Suspense } from "react";
 
 const Index = lazy(() => import("./pages/Index"));
@@ -28,6 +29,7 @@ const StudentProfile = lazy(() => import("./pages/dashboard/student/StudentProfi
 const StudentApplications = lazy(() => import("./pages/dashboard/student/StudentApplications"));
 const StudentProjects = lazy(() => import("./pages/dashboard/student/StudentProjects"));
 const StudentMessages = lazy(() => import("./pages/dashboard/student/StudentMessages"));
+const StudentCVBuilder = lazy(() => import("./pages/dashboard/student/StudentCVBuilder"));
 
 // Employer Dashboard
 const EmployerOverview = lazy(() => import("./pages/dashboard/employer/EmployerOverview"));
@@ -52,6 +54,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
+            <ScrollToTop />
             <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -73,6 +76,7 @@ const App = () => (
                 <Route path="/dashboard/student/applications" element={<ProtectedRoute requiredRole="student"><StudentApplications /></ProtectedRoute>} />
                 <Route path="/dashboard/student/projects" element={<ProtectedRoute requiredRole="student"><StudentProjects /></ProtectedRoute>} />
                 <Route path="/dashboard/student/messages" element={<ProtectedRoute requiredRole="student"><StudentMessages /></ProtectedRoute>} />
+                <Route path="/dashboard/student/cv-builder" element={<ProtectedRoute requiredRole="student"><StudentCVBuilder /></ProtectedRoute>} />
 
                 {/* Employer Dashboard */}
                 <Route path="/dashboard/employer" element={<ProtectedRoute requiredRole="employer"><EmployerOverview /></ProtectedRoute>} />
