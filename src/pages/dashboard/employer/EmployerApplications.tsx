@@ -6,20 +6,23 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { MessageSquare, Send, User } from "lucide-react";
+import { MessageSquare, Send, User, ChevronDown, Download } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { SkillTag } from "@/components/SkillTag";
 
 export default function EmployerApplications() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [msgDialog, setMsgDialog] = useState<{ open: boolean; studentUserId: string; studentName: string }>({ open: false, studentUserId: "", studentName: "" });
   const [msgContent, setMsgContent] = useState("");
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const { data: company } = useQuery({
     queryKey: ["company", user?.id],
@@ -35,12 +38,23 @@ export default function EmployerApplications() {
     queryFn: async () => {
       const { data } = await supabase
         .from("applications")
-        .select("*, internships!inner(title, company_id), students(id, headline, university, user_id)")
+        .select("*, internships!inner(title, company_id), students(id, headline, university, user_id, bio, cv_url, student_skills(skills(name)))")
         .eq("internships.company_id", company!.id)
         .order("created_at", { ascending: false });
       return data ?? [];
     },
     enabled: !!company,
+  });
+
+  // Fetch profile names for students
+  const studentUserIds = [...new Set((applications ?? []).map((a: any) => a.students?.user_id).filter(Boolean))];
+  const { data: profiles } = useQuery({
+    queryKey: ["profiles-for-apps", studentUserIds],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("id, full_name").in("id", studentUserIds);
+      return Object.fromEntries((data ?? []).map((p) => [p.id, p.full_name]));
+    },
+    enabled: studentUserIds.length > 0,
   });
 
   const updateStatus = useMutation({
@@ -73,6 +87,8 @@ export default function EmployerApplications() {
     onError: (err: any) => toast.error(err.message),
   });
 
+  const toggleExpand = (id: string) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+
   return (
     <DashboardLayout sidebar={<EmployerSidebar />} requiredRole="employer">
       <div className="space-y-6">
@@ -88,65 +104,106 @@ export default function EmployerApplications() {
           </CardContent></Card>
         ) : (
           <div className="space-y-3">
-            {applications.map((app: any) => (
-              <Card key={app.id}>
-                <CardContent className="py-4">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">{app.students?.headline || "Student"}</p>
-                        {app.students?.id && (
-                          <Button asChild variant="ghost" size="sm" className="h-6 px-2">
-                            <Link to={`/students/${app.students.id}`}>
-                              <User className="h-3 w-3 mr-1" /> View Profile
-                            </Link>
+            {applications.map((app: any) => {
+              const studentName = profiles?.[app.students?.user_id] || app.students?.headline || "Student";
+              const skills = app.students?.student_skills?.map((ss: any) => ss.skills?.name).filter(Boolean) ?? [];
+
+              return (
+                <Collapsible key={app.id} open={expanded[app.id]} onOpenChange={() => toggleExpand(app.id)}>
+                  <Card>
+                    <CardContent className="py-4">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{studentName}</p>
+                            {app.students?.id && (
+                              <Button asChild variant="ghost" size="sm" className="h-6 px-2">
+                                <Link to={`/students/${app.students.id}`}>
+                                  <User className="h-3 w-3 mr-1" /> View Profile
+                                </Link>
+                              </Button>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {app.students?.university} · Applied for {app.internships?.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {format(new Date(app.created_at), "MMM d, yyyy")}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <ChevronDown className={`h-4 w-4 transition-transform ${expanded[app.id] ? "rotate-180" : ""}`} />
+                            </Button>
+                          </CollapsibleTrigger>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              setMsgDialog({
+                                open: true,
+                                studentUserId: app.students?.user_id ?? "",
+                                studentName,
+                              })
+                            }
+                          >
+                            <MessageSquare className="h-4 w-4 mr-1" /> Message
+                          </Button>
+                          <Select
+                            value={app.status}
+                            onValueChange={(v) => updateStatus.mutate({ id: app.id, status: v })}
+                          >
+                            <SelectTrigger className="w-[140px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="applied">Applied</SelectItem>
+                              <SelectItem value="shortlisted">Shortlisted</SelectItem>
+                              <SelectItem value="interview">Interview</SelectItem>
+                              <SelectItem value="offered">Offered</SelectItem>
+                              <SelectItem value="rejected">Rejected</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <CollapsibleContent className="mt-4 space-y-3 border-t border-border pt-4">
+                        {app.cover_letter && (
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-1">Cover Letter</p>
+                            <p className="text-sm bg-muted/50 p-3 rounded-lg">{app.cover_letter}</p>
+                          </div>
+                        )}
+                        {app.students?.bio && (
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-1">About</p>
+                            <p className="text-sm">{app.students.bio}</p>
+                          </div>
+                        )}
+                        {skills.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-1">Skills</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {skills.map((s: string) => (
+                                <SkillTag key={s} label={s} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {app.students?.cv_url && (
+                          <Button asChild variant="outline" size="sm">
+                            <a href={app.students.cv_url} target="_blank" rel="noopener noreferrer">
+                              <Download className="h-3 w-3 mr-1" /> Download CV
+                            </a>
                           </Button>
                         )}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {app.students?.university} · Applied for {app.internships?.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {format(new Date(app.created_at), "MMM d, yyyy")}
-                      </p>
-                      {app.cover_letter && (
-                        <p className="text-sm mt-2 bg-muted/50 p-2 rounded">{app.cover_letter}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setMsgDialog({
-                            open: true,
-                            studentUserId: app.students?.user_id ?? "",
-                            studentName: app.students?.headline || "Student",
-                          })
-                        }
-                      >
-                        <MessageSquare className="h-4 w-4 mr-1" /> Message
-                      </Button>
-                      <Select
-                        value={app.status}
-                        onValueChange={(v) => updateStatus.mutate({ id: app.id, status: v })}
-                      >
-                        <SelectTrigger className="w-[140px]">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="applied">Applied</SelectItem>
-                          <SelectItem value="shortlisted">Shortlisted</SelectItem>
-                          <SelectItem value="interview">Interview</SelectItem>
-                          <SelectItem value="offered">Offered</SelectItem>
-                          <SelectItem value="rejected">Rejected</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                      </CollapsibleContent>
+                    </CardContent>
+                  </Card>
+                </Collapsible>
+              );
+            })}
           </div>
         )}
       </div>
