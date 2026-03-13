@@ -27,15 +27,15 @@ export function ParticleNetwork() {
 
     const isDark = theme === "dark";
     const particleColors = isDark 
-      ? ["hsla(36, 90%, 55%, 0.6)", "hsla(168, 76%, 50%, 0.6)"] // Amber and Teal for dark mode
-      : ["hsla(34, 90%, 44%, 0.5)", "hsla(174, 84%, 29%, 0.5)"]; // Amber and Teal for light mode
+      ? ["hsla(160, 84%, 50%, 0.6)", "hsla(168, 76%, 50%, 0.6)"]
+      : ["hsla(160, 84%, 39%, 0.5)", "hsla(168, 76%, 45%, 0.5)"];
 
-    const lineStyle = isDark ? "hsla(36, 90%, 55%, " : "hsla(174, 84%, 29%, ";
+    const lineStyle = isDark ? "hsla(160, 84%, 50%, " : "hsla(160, 84%, 39%, ";
 
     const initParticles = () => {
       particles = [];
       const particleCount = Math.floor((window.innerWidth * window.innerHeight) / 15000);
-      const numParticles = Math.min(particleCount, 80); // Cap at 80
+      const numParticles = Math.min(particleCount, 80);
 
       for (let i = 0; i < numParticles; i++) {
         particles.push({

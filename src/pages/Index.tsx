@@ -46,7 +46,7 @@ export default function Index() {
     queryFn: async () => {
       const { data } = await supabase
         .from("students")
-        .select("id, headline, university, profiles(full_name), student_skills(skills(name))")
+        .select("id, headline, university, profiles!students_user_id_profiles_fkey(full_name), student_skills(skills(name))")
         .eq("available", true)
         .order("created_at", { ascending: false })
         .limit(3);

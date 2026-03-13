@@ -19,7 +19,7 @@ export default function Students() {
     queryFn: async () => {
       const { data } = await supabase
         .from("students")
-        .select("id, headline, university, user_id, profiles(full_name, avatar_url), student_skills(skills(name))")
+        .select("id, headline, university, user_id, profiles!students_user_id_profiles_fkey(full_name, avatar_url), student_skills(skills(name))")
         .eq("available", true)
         .order("created_at", { ascending: false });
       return (data ?? []).map((s: any) => ({
