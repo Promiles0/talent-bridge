@@ -1,13 +1,15 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { EmployerSidebar } from "@/components/EmployerSidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Briefcase, Users, Eye } from "lucide-react";
+import { Building2, Briefcase, Users, Eye, Plus, Search, MessageSquare } from "lucide-react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "react-router-dom";
 
 function AnimatedCounter({ value }: { value: number }) {
   const count = useMotionValue(0);
@@ -27,6 +29,13 @@ function AnimatedCounter({ value }: { value: number }) {
 
   return <span ref={ref}>0</span>;
 }
+
+const quickActions = [
+  { label: "Post Internship", icon: Plus, href: "/dashboard/employer/internships" },
+  { label: "View Applicants", icon: Users, href: "/dashboard/employer/applications" },
+  { label: "Search Students", icon: Search, href: "/students" },
+  { label: "Messages", icon: MessageSquare, href: "/dashboard/employer/messages" },
+];
 
 export default function EmployerOverview() {
   const { user } = useAuth();
@@ -82,15 +91,21 @@ export default function EmployerOverview() {
   return (
     <DashboardLayout sidebar={<EmployerSidebar />} requiredRole="employer">
       <div className="space-y-6">
-        <div>
+        {/* Welcome banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-xl bg-gradient-to-r from-primary/10 via-secondary/5 to-transparent p-6 border border-primary/10"
+        >
           <h1 className="font-heading text-2xl font-bold">
-            Welcome, {profile?.full_name || "Employer"}!
+            Hello, {company?.name || profile?.full_name || "Employer"} 👋
           </h1>
-          <p className="text-muted-foreground text-sm">
-            {company ? `Managing ${company.name}` : "Set up your company profile to get started."}
+          <p className="text-muted-foreground text-sm mt-1">
+            {company ? "Manage your talent pipeline and internship listings." : "Set up your company profile to get started."}
           </p>
-        </div>
+        </motion.div>
 
+        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {loadingCompany ? (
             Array.from({ length: 4 }).map((_, i) => (
@@ -107,7 +122,7 @@ export default function EmployerOverview() {
           ) : (
             stats.map((s) => (
               <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-                <Card>
+                <Card className="glass-card-themed">
                   <CardContent className="pt-6">
                     <div className="flex items-center gap-3">
                       <s.icon className={`h-8 w-8 ${s.color}`} />
@@ -123,13 +138,26 @@ export default function EmployerOverview() {
           )}
         </div>
 
+        {/* Quick Actions */}
+        <div className="flex flex-wrap gap-3">
+          {quickActions.map((a) => (
+            <Button key={a.label} asChild variant="outline" size="sm" className="gap-2">
+              <Link to={a.href}>
+                <a.icon className="h-4 w-4" /> {a.label}
+              </Link>
+            </Button>
+          ))}
+        </div>
+
+        {/* Recent Applications */}
         <Card>
           <CardHeader><CardTitle className="text-lg">Recent Applications</CardTitle></CardHeader>
           <CardContent>
             {!applications?.length ? (
               <div className="py-6 text-center">
                 <Users className="h-10 w-10 text-muted-foreground/40 mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">No applications received yet. Post an internship to attract talent!</p>
+                <p className="text-sm text-muted-foreground mb-3">No applications received yet.</p>
+                <Button asChild size="sm"><Link to="/dashboard/employer/internships">Post an Internship</Link></Button>
               </div>
             ) : (
               <div className="space-y-3">

@@ -40,7 +40,7 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse 50% 40% at 50% 50%, hsl(36 90% 55% / 0.08) 0%, transparent 70%)",
+                "radial-gradient(ellipse 50% 40% at 50% 50%, hsl(160 84% 50% / 0.08) 0%, transparent 70%)",
             }}
           />
 
@@ -59,8 +59,8 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
                   }}
                   className={
                     char === "-" || char === "."
-                      ? "text-[hsl(36_90%_55%)]"
-                      : "text-[hsl(30_18%_93%)]"
+                      ? "text-[hsl(160_84%_50%)]"
+                      : "text-[hsl(150_18%_93%)]"
                   }
                 >
                   {char}
@@ -70,7 +70,7 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
 
             {/* Cursor blink */}
             <motion.span
-              className="inline-block w-[3px] h-[1.1em] bg-[hsl(36_90%_55%)] ml-1 align-text-bottom"
+              className="inline-block w-[3px] h-[1.1em] bg-[hsl(160_84%_50%)] ml-1 align-text-bottom"
               animate={{ opacity: [1, 0] }}
               transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
             />
@@ -78,7 +78,7 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
 
           {/* Tagline */}
           <motion.p
-            className="text-[hsl(30_10%_55%)] text-sm tracking-widest uppercase mb-10 font-body"
+            className="text-[hsl(150_10%_55%)] text-sm tracking-widest uppercase mb-10 font-body"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2, duration: 0.6 }}
@@ -93,14 +93,14 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
                 className="h-full rounded-full"
                 style={{
                   background:
-                    "linear-gradient(90deg, hsl(36 90% 55%), hsl(34 90% 44%))",
+                    "linear-gradient(90deg, hsl(160 84% 50%), hsl(160 84% 39%))",
                   width: `${progress}%`,
                 }}
                 transition={{ duration: 0.1 }}
               />
             </div>
             <motion.p
-              className="text-[hsl(30_10%_55%)] text-xs mt-3 text-center tabular-nums"
+              className="text-[hsl(150_10%_55%)] text-xs mt-3 text-center tabular-nums"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}

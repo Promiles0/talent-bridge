@@ -6,48 +6,48 @@
 
 @layer base {
   :root {
-    /* Clean Studio - Light Mode */
-    --background: 36 20% 90%;
-    --foreground: 30 10% 9%;
+    /* Clean Studio - Light Mode — Emerald */
+    --background: 150 20% 96%;
+    --foreground: 160 10% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 30 10% 9%;
+    --card-foreground: 160 10% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 30 10% 9%;
+    --popover-foreground: 160 10% 9%;
 
-    --primary: 34 90% 44%;
+    --primary: 160 84% 39%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 174 84% 29%;
+    --secondary: 160 60% 45%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 30 15% 90%;
-    --muted-foreground: 30 10% 45%;
+    --muted: 150 15% 90%;
+    --muted-foreground: 160 10% 45%;
 
-    --accent: 30 15% 92%;
-    --accent-foreground: 30 10% 9%;
+    --accent: 150 15% 92%;
+    --accent-foreground: 160 10% 9%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 18% 88%;
-    --input: 30 18% 88%;
-    --ring: 34 90% 44%;
+    --border: 150 18% 88%;
+    --input: 150 18% 88%;
+    --ring: 160 84% 39%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 36 18% 92%;
-    --sidebar-foreground: 30 10% 35%;
-    --sidebar-primary: 34 90% 44%;
+    --sidebar-background: 150 18% 95%;
+    --sidebar-foreground: 160 10% 35%;
+    --sidebar-primary: 160 84% 39%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 30 15% 92%;
-    --sidebar-accent-foreground: 30 10% 9%;
-    --sidebar-border: 30 18% 88%;
-    --sidebar-ring: 34 90% 44%;
+    --sidebar-accent: 150 15% 92%;
+    --sidebar-accent-foreground: 160 10% 9%;
+    --sidebar-border: 150 18% 88%;
+    --sidebar-ring: 160 84% 39%;
 
     --glass-bg: 0 0% 100% / 0.6;
-    --glass-border: 30 20% 70% / 0.3;
+    --glass-border: 150 20% 70% / 0.3;
     --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 
     --font-heading: 'Outfit', sans-serif;
@@ -55,43 +55,43 @@
   }
 
   .dark {
-    /* Terminal Noir - Dark Mode */
+    /* Terminal Noir - Dark Mode — Emerald */
     --background: 0 0% 2%;
-    --foreground: 30 18% 93%;
+    --foreground: 150 18% 93%;
 
     --card: 240 4% 6%;
-    --card-foreground: 30 18% 93%;
+    --card-foreground: 150 18% 93%;
 
     --popover: 240 4% 6%;
-    --popover-foreground: 30 18% 93%;
+    --popover-foreground: 150 18% 93%;
 
-    --primary: 36 90% 55%;
+    --primary: 160 84% 50%;
     --primary-foreground: 0 0% 5%;
 
     --secondary: 168 76% 50%;
     --secondary-foreground: 0 0% 5%;
 
     --muted: 240 4% 10%;
-    --muted-foreground: 30 10% 55%;
+    --muted-foreground: 150 10% 55%;
 
     --accent: 240 4% 8%;
-    --accent-foreground: 30 18% 93%;
+    --accent-foreground: 150 18% 93%;
 
     --destructive: 0 63% 31%;
-    --destructive-foreground: 30 18% 93%;
+    --destructive-foreground: 150 18% 93%;
 
     --border: 0 0% 100% / 0.06;
     --input: 0 0% 100% / 0.06;
-    --ring: 36 90% 55%;
+    --ring: 160 84% 50%;
 
     --sidebar-background: 240 4% 4%;
-    --sidebar-foreground: 30 18% 85%;
-    --sidebar-primary: 36 90% 55%;
+    --sidebar-foreground: 150 18% 85%;
+    --sidebar-primary: 160 84% 50%;
     --sidebar-primary-foreground: 0 0% 5%;
     --sidebar-accent: 240 4% 8%;
-    --sidebar-accent-foreground: 30 18% 93%;
+    --sidebar-accent-foreground: 150 18% 93%;
     --sidebar-border: 0 0% 100% / 0.08;
-    --sidebar-ring: 36 90% 55%;
+    --sidebar-ring: 160 84% 50%;
 
     --glass-bg: 0 0% 100% / 0.04;
     --glass-border: 0 0% 100% / 0.06;
@@ -139,67 +139,52 @@
   opacity: 0.04;
 }
 
-/* Immersive light background - Clean Studio */
+/* Immersive light background */
 .bg-immersive-light {
   position: relative;
   background:
-    radial-gradient(ellipse 80% 60% at 10% 20%, hsl(34 90% 44% / 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 80% at 90% 70%, hsl(174 84% 29% / 0.035) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 50% at 50% 50%, hsl(280 60% 50% / 0.02) 0%, transparent 70%),
-    hsl(36 20% 90%);
+    radial-gradient(ellipse 80% 60% at 10% 20%, hsl(160 84% 39% / 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 90% 70%, hsl(168 76% 50% / 0.035) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, hsl(160 60% 45% / 0.02) 0%, transparent 70%),
+    hsl(150 20% 96%);
   background-size: 200% 200%, 200% 200%, 100% 100%, 100% 100%;
   animation: gradient-drift 30s ease-in-out infinite alternate;
 }
 
-/* Immersive dark background - Terminal Noir */
+/* Immersive dark background */
 .bg-immersive-dark {
   position: relative;
   background:
-    radial-gradient(ellipse 80% 60% at 10% 20%, hsl(36 90% 55% / 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at 10% 20%, hsl(160 84% 50% / 0.06) 0%, transparent 60%),
     radial-gradient(ellipse 60% 80% at 90% 70%, hsl(168 76% 50% / 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 50% at 50% 50%, hsl(280 60% 50% / 0.03) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, hsl(160 60% 45% / 0.03) 0%, transparent 70%),
     hsl(0 0% 2%);
   background-size: 200% 200%, 200% 200%, 100% 100%, 100% 100%;
   animation: gradient-drift 25s ease-in-out infinite alternate;
 }
 
 @keyframes gradient-drift {
-  0% {
-    background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%;
-  }
-  50% {
-    background-position: 40% 60%, 60% 30%, 50% 50%, 0% 0%;
-  }
-  100% {
-    background-position: 100% 100%, 0% 0%, 50% 50%, 0% 0%;
-  }
+  0% { background-position: 0% 0%, 100% 100%, 50% 50%, 0% 0%; }
+  50% { background-position: 40% 60%, 60% 30%, 50% 50%, 0% 0%; }
+  100% { background-position: 100% 100%, 0% 0%, 50% 50%, 0% 0%; }
 }
 
 /* Section-specific ambient backgrounds */
-
-/* Hero: Radial vignette amber + teal */
-.section-hero {
-  --section-glow: 34 90% 44%;
-}
 .section-hero::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
   background: 
-    radial-gradient(ellipse 60% 40% at 50% 0%, hsl(var(--section-glow) / 0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 30% at 80% 80%, hsl(174 84% 29% / 0.05) 0%, transparent 60%);
+    radial-gradient(ellipse 60% 40% at 50% 0%, hsl(160 84% 39% / 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 80%, hsl(168 76% 50% / 0.05) 0%, transparent 60%);
 }
 .dark .section-hero::after {
   background: 
-    radial-gradient(ellipse 60% 40% at 50% 0%, hsl(36 90% 55% / 0.1) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 50% 0%, hsl(160 84% 50% / 0.1) 0%, transparent 70%),
     radial-gradient(ellipse 40% 30% at 80% 80%, hsl(168 76% 50% / 0.06) 0%, transparent 60%);
 }
 
-/* Features: Circuit-board grid pattern */
-.section-features {
-  --section-glow: 174 84% 29%;
-}
 .section-features::after {
   content: '';
   position: absolute;
@@ -207,56 +192,44 @@
   pointer-events: none;
   opacity: 0.03;
   background-image: 
-    linear-gradient(hsl(174 84% 29%) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(174 84% 29%) 1px, transparent 1px);
+    linear-gradient(hsl(160 84% 39%) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(160 84% 39%) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 .dark .section-features::after {
   opacity: 0.04;
   background-image: 
-    linear-gradient(hsl(168 76% 50%) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(168 76% 50%) 1px, transparent 1px);
+    linear-gradient(hsl(160 84% 50%) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(160 84% 50%) 1px, transparent 1px);
 }
 
-/* Listings: Subtle grid overlay */
-.section-listings {
-  --section-glow: 34 70% 50%;
-}
 .section-listings::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
   background: 
-    radial-gradient(ellipse 70% 60% at 70% 40%, hsl(var(--section-glow) / 0.05) 0%, transparent 60%);
+    radial-gradient(ellipse 70% 60% at 70% 40%, hsl(160 84% 39% / 0.05) 0%, transparent 60%);
 }
 .dark .section-listings::after {
   background: 
-    radial-gradient(ellipse 70% 60% at 70% 40%, hsl(36 90% 55% / 0.07) 0%, transparent 60%);
+    radial-gradient(ellipse 70% 60% at 70% 40%, hsl(160 84% 50% / 0.07) 0%, transparent 60%);
 }
 
-/* Students: Geometric dot pattern */
-.section-students {
-  --section-glow: 280 60% 50%;
-}
 .section-students::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
   opacity: 0.04;
-  background-image: radial-gradient(hsl(174 84% 29%) 1px, transparent 1px);
+  background-image: radial-gradient(hsl(160 84% 39%) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 .dark .section-students::after {
   opacity: 0.05;
-  background-image: radial-gradient(hsl(168 76% 50%) 1px, transparent 1px);
+  background-image: radial-gradient(hsl(160 84% 50%) 1px, transparent 1px);
 }
 
-/* Skills: Circuit-board grid pattern */
-.section-skills {
-  --section-glow: 174 84% 29%;
-}
 .section-skills::after {
   content: '';
   position: absolute;
@@ -264,39 +237,31 @@
   pointer-events: none;
   opacity: 0.03;
   background-image: 
-    linear-gradient(hsl(174 84% 29%) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(174 84% 29%) 1px, transparent 1px);
+    linear-gradient(hsl(160 84% 39%) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(160 84% 39%) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 .dark .section-skills::after {
   opacity: 0.04;
   background-image: 
-    linear-gradient(hsl(168 76% 50%) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(168 76% 50%) 1px, transparent 1px);
+    linear-gradient(hsl(160 84% 50%) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(160 84% 50%) 1px, transparent 1px);
 }
 
-/* Education: Dot grid */
-.section-education {
-  --section-glow: 36 90% 55%;
-}
 .section-education::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
   opacity: 0.04;
-  background-image: radial-gradient(hsl(174 84% 29%) 2px, transparent 2px);
+  background-image: radial-gradient(hsl(160 84% 39%) 2px, transparent 2px);
   background-size: 24px 24px;
 }
 .dark .section-education::after {
   opacity: 0.05;
-  background-image: radial-gradient(hsl(168 76% 50%) 2px, transparent 2px);
+  background-image: radial-gradient(hsl(160 84% 50%) 2px, transparent 2px);
 }
 
-/* Languages: Geometric diamond pattern */
-.section-languages {
-  --section-glow: 280 60% 50%;
-}
 .section-languages::after {
   content: '';
   position: absolute;
@@ -304,14 +269,14 @@
   pointer-events: none;
   opacity: 0.025;
   background-image: 
-    linear-gradient(45deg, hsl(34 90% 44%) 1px, transparent 1px),
-    linear-gradient(-45deg, hsl(174 84% 29%) 1px, transparent 1px);
+    linear-gradient(45deg, hsl(160 84% 39%) 1px, transparent 1px),
+    linear-gradient(-45deg, hsl(168 76% 50%) 1px, transparent 1px);
   background-size: 20px 20px, 20px 20px;
 }
 .dark .section-languages::after {
   opacity: 0.035;
   background-image: 
-    linear-gradient(45deg, hsl(36 90% 55%) 1px, transparent 1px),
+    linear-gradient(45deg, hsl(160 84% 50%) 1px, transparent 1px),
     linear-gradient(-45deg, hsl(168 76% 50%) 1px, transparent 1px);
 }
 
@@ -338,4 +303,11 @@
   .floating-blob {
     animation: none !important;
   }
+}
+
+/* Print styles for CV Builder */
+@media print {
+  body * { visibility: hidden; }
+  .cv-print, .cv-print * { visibility: visible; }
+  .cv-print { position: absolute; left: 0; top: 0; width: 100%; }
 }

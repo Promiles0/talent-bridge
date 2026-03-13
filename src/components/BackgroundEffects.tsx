@@ -21,7 +21,7 @@ export function BackgroundEffects() {
     <>
       <ParticleNetwork />
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
-        {/* Amber blob - left side */}
+        {/* Emerald blob - left side */}
       <div
         className="floating-blob absolute rounded-full blur-3xl"
         style={{
@@ -32,8 +32,8 @@ export function BackgroundEffects() {
           left: "-10%",
           top: `${10 + scrollY * 0.3}%`,
           background: isDark
-            ? "radial-gradient(circle, hsl(36 90% 55% / 0.08) 0%, transparent 70%)"
-            : "radial-gradient(circle, hsl(34 90% 44% / 0.06) 0%, transparent 70%)",
+            ? "radial-gradient(circle, hsl(160 84% 50% / 0.08) 0%, transparent 70%)"
+            : "radial-gradient(circle, hsl(160 84% 39% / 0.06) 0%, transparent 70%)",
           animation: "blob-drift-1 20s ease-in-out infinite",
         }}
       />
@@ -50,12 +50,12 @@ export function BackgroundEffects() {
           top: `${40 + scrollY * -0.2}%`,
           background: isDark
             ? "radial-gradient(circle, hsl(168 76% 50% / 0.06) 0%, transparent 70%)"
-            : "radial-gradient(circle, hsl(174 84% 29% / 0.05) 0%, transparent 70%)",
+            : "radial-gradient(circle, hsl(168 76% 45% / 0.05) 0%, transparent 70%)",
           animation: "blob-drift-2 25s ease-in-out infinite",
         }}
       />
 
-      {/* Purple blob - center */}
+      {/* Subtle emerald blob - center */}
       <div
         className="floating-blob absolute rounded-full blur-3xl"
         style={{
@@ -66,50 +66,29 @@ export function BackgroundEffects() {
           left: "40%",
           top: `${60 + scrollY * 0.15}%`,
           background: isDark
-            ? "radial-gradient(circle, hsl(280 60% 50% / 0.04) 0%, transparent 70%)"
-            : "radial-gradient(circle, hsl(280 60% 50% / 0.03) 0%, transparent 70%)",
+            ? "radial-gradient(circle, hsl(160 60% 45% / 0.04) 0%, transparent 70%)"
+            : "radial-gradient(circle, hsl(160 60% 45% / 0.03) 0%, transparent 70%)",
           animation: "blob-drift-3 30s ease-in-out infinite",
         }}
       />
 
       <style>{`
         @keyframes blob-drift-1 {
-          0%, 100% {
-            transform: translate(0, 0) scale(1);
-          }
-          33% {
-            transform: translate(5%, 10%) scale(1.05);
-          }
-          66% {
-            transform: translate(-3%, 5%) scale(0.95);
-          }
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(5%, 10%) scale(1.05); }
+          66% { transform: translate(-3%, 5%) scale(0.95); }
         }
-
         @keyframes blob-drift-2 {
-          0%, 100% {
-            transform: translate(0, 0) scale(1);
-          }
-          33% {
-            transform: translate(-8%, -5%) scale(0.95);
-          }
-          66% {
-            transform: translate(4%, 8%) scale(1.05);
-          }
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(-8%, -5%) scale(0.95); }
+          66% { transform: translate(4%, 8%) scale(1.05); }
         }
-
         @keyframes blob-drift-3 {
-          0%, 100% {
-            transform: translate(0, 0) scale(1);
-          }
-          50% {
-            transform: translate(-5%, -10%) scale(1.1);
-          }
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(-5%, -10%) scale(1.1); }
         }
-
         @media (prefers-reduced-motion: reduce) {
-          .floating-blob {
-            animation: none !important;
-          }
+          .floating-blob { animation: none !important; }
         }
       `}</style>
     </div>
