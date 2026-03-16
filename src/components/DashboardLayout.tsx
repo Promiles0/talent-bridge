@@ -50,10 +50,11 @@ export function DashboardLayout({ children, sidebar, requiredRole }: DashboardLa
               </Button>
             </div>
           </header>
-          <main className="flex-1 p-6 bg-background overflow-auto">
+          <main className="flex-1 p-6 pb-20 md:pb-6 bg-background overflow-auto">
             {children}
           </main>
         </div>
+        <MobileTabBar />
       </div>
     </SidebarProvider>
   );
