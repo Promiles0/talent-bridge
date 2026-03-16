@@ -5,6 +5,7 @@ import { Navigate, Link } from "react-router-dom";
 import { Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/NotificationBell";
+import { MobileTabBar } from "@/components/MobileTabBar";
 import type { ReactNode } from "react";
 
 interface DashboardLayoutProps {
