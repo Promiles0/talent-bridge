@@ -318,6 +318,35 @@ export type Database = {
           },
         ]
       }
+      saved_internships: {
+        Row: {
+          created_at: string | null
+          id: string
+          internship_id: string
+          student_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          internship_id: string
+          student_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          internship_id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_internships_internship_id_fkey"
+            columns: ["internship_id"]
+            isOneToOne: false
+            referencedRelation: "internships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       skills: {
         Row: {
           category: string | null
@@ -333,6 +362,27 @@ export type Database = {
           category?: string | null
           id?: string
           name?: string
+        }
+        Relationships: []
+      }
+      student_milestones: {
+        Row: {
+          earned_at: string | null
+          id: string
+          milestone: string
+          student_id: string
+        }
+        Insert: {
+          earned_at?: string | null
+          id?: string
+          milestone: string
+          student_id: string
+        }
+        Update: {
+          earned_at?: string | null
+          id?: string
+          milestone?: string
+          student_id?: string
         }
         Relationships: []
       }

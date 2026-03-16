@@ -55,7 +55,7 @@ export default function EmployerInternships() {
         stipend: form.stipend || null,
         spots: parseInt(form.spots) || 1,
         requirements: form.requirements || null,
-        status: "draft",
+        status: "active",
       });
       if (error) throw error;
     },

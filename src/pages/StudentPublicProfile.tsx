@@ -19,7 +19,7 @@ export default function StudentPublicProfile() {
     queryFn: async () => {
       const { data } = await supabase
         .from("students")
-        .select("*, profiles:user_id(full_name, avatar_url)")
+        .select("*, profiles!students_user_id_profiles_fkey(full_name, avatar_url)")
         .eq("id", studentId!)
         .maybeSingle();
       return data;

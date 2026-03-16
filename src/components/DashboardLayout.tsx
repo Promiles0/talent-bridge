@@ -5,6 +5,7 @@ import { Navigate, Link } from "react-router-dom";
 import { Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/NotificationBell";
+import { MobileTabBar } from "@/components/MobileTabBar";
 import type { ReactNode } from "react";
 
 interface DashboardLayoutProps {
@@ -49,10 +50,11 @@ export function DashboardLayout({ children, sidebar, requiredRole }: DashboardLa
               </Button>
             </div>
           </header>
-          <main className="flex-1 p-6 bg-background overflow-auto">
+          <main className="flex-1 p-6 pb-20 md:pb-6 bg-background overflow-auto">
             {children}
           </main>
         </div>
+        <MobileTabBar />
       </div>
     </SidebarProvider>
   );
