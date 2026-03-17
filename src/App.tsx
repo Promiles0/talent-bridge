@@ -22,6 +22,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const StudentPublicProfile = lazy(() => import("./pages/StudentPublicProfile"));
+const InternshipDetail = lazy(() => import("./pages/InternshipDetail"));
 
 // Student Dashboard
 const StudentOverview = lazy(() => import("./pages/dashboard/student/StudentOverview"));
@@ -30,6 +31,7 @@ const StudentApplications = lazy(() => import("./pages/dashboard/student/Student
 const StudentProjects = lazy(() => import("./pages/dashboard/student/StudentProjects"));
 const StudentMessages = lazy(() => import("./pages/dashboard/student/StudentMessages"));
 const StudentCVBuilder = lazy(() => import("./pages/dashboard/student/StudentCVBuilder"));
+const StudentSavedInternships = lazy(() => import("./pages/dashboard/student/StudentSavedInternships"));
 
 // Employer Dashboard
 const EmployerOverview = lazy(() => import("./pages/dashboard/employer/EmployerOverview"));
@@ -62,6 +64,7 @@ const App = () => (
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/students" element={<Students />} />
                 <Route path="/internships" element={<Internships />} />
+                <Route path="/internships/:id" element={<InternshipDetail />} />
                 <Route path="/students/:studentId" element={<StudentPublicProfile />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
@@ -77,6 +80,7 @@ const App = () => (
                 <Route path="/dashboard/student/projects" element={<ProtectedRoute requiredRole="student"><StudentProjects /></ProtectedRoute>} />
                 <Route path="/dashboard/student/messages" element={<ProtectedRoute requiredRole="student"><StudentMessages /></ProtectedRoute>} />
                 <Route path="/dashboard/student/cv-builder" element={<ProtectedRoute requiredRole="student"><StudentCVBuilder /></ProtectedRoute>} />
+                <Route path="/dashboard/student/saved" element={<ProtectedRoute requiredRole="student"><StudentSavedInternships /></ProtectedRoute>} />
 
                 {/* Employer Dashboard */}
                 <Route path="/dashboard/employer" element={<ProtectedRoute requiredRole="employer"><EmployerOverview /></ProtectedRoute>} />

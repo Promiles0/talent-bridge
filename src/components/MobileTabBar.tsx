@@ -1,13 +1,13 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation, Link } from "react-router-dom";
-import { Home, Search, FileText, MessageSquare, User, LayoutDashboard, Briefcase, Users, Building2 } from "lucide-react";
+import { Home, Search, FileText, MessageSquare, Bookmark, LayoutDashboard, Briefcase, Users, Building2 } from "lucide-react";
 
 const studentTabs = [
   { label: "Home", icon: Home, href: "/dashboard/student" },
   { label: "Search", icon: Search, href: "/internships" },
-  { label: "Applications", icon: FileText, href: "/dashboard/student/applications" },
+  { label: "Saved", icon: Bookmark, href: "/dashboard/student/saved" },
   { label: "Messages", icon: MessageSquare, href: "/dashboard/student/messages" },
-  { label: "Profile", icon: User, href: "/dashboard/student/profile" },
+  { label: "Applications", icon: FileText, href: "/dashboard/student/applications" },
 ];
 
 const employerTabs = [

@@ -322,7 +322,7 @@ export default function StudentOverview() {
                         {intern.stipend && <SkillTag label={intern.stipend} />}
                       </div>
                       <Button asChild size="sm" variant="outline" className="w-full text-xs">
-                        <Link to="/internships">View & Apply</Link>
+                        <Link to={`/internships/${intern.id}`}>View & Apply</Link>
                       </Button>
                     </CardContent>
                   </Card>

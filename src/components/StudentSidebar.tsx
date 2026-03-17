@@ -1,4 +1,4 @@
-import { Home, User, Briefcase, FolderKanban, MessageSquare, FileText, LogOut } from "lucide-react";
+import { Home, User, Briefcase, FolderKanban, MessageSquare, FileText, LogOut, Bookmark } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,6 +23,7 @@ const items = [
   { title: "Overview", url: "/dashboard/student", icon: Home },
   { title: "Profile", url: "/dashboard/student/profile", icon: User },
   { title: "Applications", url: "/dashboard/student/applications", icon: Briefcase },
+  { title: "Saved", url: "/dashboard/student/saved", icon: Bookmark },
   { title: "Projects", url: "/dashboard/student/projects", icon: FolderKanban },
   { title: "Messages", url: "/dashboard/student/messages", icon: MessageSquare, badgeKey: "messages" as const },
   { title: "CV Builder", url: "/dashboard/student/cv-builder", icon: FileText },
