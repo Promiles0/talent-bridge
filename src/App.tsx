@@ -31,6 +31,7 @@ const StudentApplications = lazy(() => import("./pages/dashboard/student/Student
 const StudentProjects = lazy(() => import("./pages/dashboard/student/StudentProjects"));
 const StudentMessages = lazy(() => import("./pages/dashboard/student/StudentMessages"));
 const StudentCVBuilder = lazy(() => import("./pages/dashboard/student/StudentCVBuilder"));
+const StudentSavedInternships = lazy(() => import("./pages/dashboard/student/StudentSavedInternships"));
 
 // Employer Dashboard
 const EmployerOverview = lazy(() => import("./pages/dashboard/employer/EmployerOverview"));
