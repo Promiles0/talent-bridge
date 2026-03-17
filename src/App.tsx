@@ -22,6 +22,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const StudentPublicProfile = lazy(() => import("./pages/StudentPublicProfile"));
+const InternshipDetail = lazy(() => import("./pages/InternshipDetail"));
 
 // Student Dashboard
 const StudentOverview = lazy(() => import("./pages/dashboard/student/StudentOverview"));
