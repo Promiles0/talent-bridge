@@ -150,7 +150,7 @@ export default function Internships() {
                         <Building2 className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-heading font-semibold text-sm">{intern.title}</h3>
+                        <Link to={`/internships/${intern.id}`} className="font-heading font-semibold text-sm hover:text-primary transition-colors">{intern.title}</Link>
                         <p className="text-xs text-muted-foreground">{intern.companies?.name}</p>
                       </div>
                     </div>
