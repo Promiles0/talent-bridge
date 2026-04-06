@@ -42,7 +42,7 @@ export default function AdminAnalytics() {
                     <XAxis dataKey="name" fontSize={12} />
                     <YAxis fontSize={12} />
                     <Tooltip />
-                    <Bar dataKey="value" fill="hsl(34, 90%, 44%)" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="value" fill="hsl(160, 84%, 39%)" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
@@ -61,7 +61,7 @@ export default function AdminAnalytics() {
                     <XAxis dataKey="name" fontSize={12} />
                     <YAxis fontSize={12} />
                     <Tooltip />
-                    <Bar dataKey="value" fill="hsl(174, 84%, 29%)" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="value" fill="hsl(168, 76%, 50%)" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (

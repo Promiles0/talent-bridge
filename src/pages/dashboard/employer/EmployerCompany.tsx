@@ -5,15 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Upload, Camera, Building2 } from "lucide-react";
+import { motion } from "framer-motion";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export default function EmployerCompany() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const { data: company, isLoading } = useQuery({
     queryKey: ["company", user?.id],
@@ -41,6 +48,55 @@ export default function EmployerCompany() {
       });
     }
   }, [company]);
+
+  const getLogoUrl = () => {
+    if (company?.logo_url) {
+      if (company.logo_url.startsWith("http")) return company.logo_url;
+      return `${SUPABASE_URL}/storage/v1/object/public/avatars/${company.logo_url}`;
+    }
+    return null;
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !company) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5MB");
+      return;
+    }
+
+    setUploadingLogo(true);
+    const ext = file.name.split(".").pop();
+    const filePath = `companies/${company.id}/logo.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      toast.error(uploadError.message);
+      setUploadingLogo(false);
+      return;
+    }
+
+    const { error: updateError } = await supabase
+      .from("companies")
+      .update({ logo_url: filePath })
+      .eq("id", company.id);
+
+    if (updateError) {
+      toast.error(updateError.message);
+    } else {
+      toast.success("Logo updated!");
+      queryClient.invalidateQueries({ queryKey: ["company"] });
+    }
+    setUploadingLogo(false);
+  };
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -74,12 +130,53 @@ export default function EmployerCompany() {
     </DashboardLayout>
   );
 
+  const logoUrl = getLogoUrl();
+  const initials = company?.name?.slice(0, 2)?.toUpperCase() || "CO";
+
   return (
     <DashboardLayout sidebar={<EmployerSidebar />} requiredRole="employer">
-      <div className="max-w-2xl space-y-6">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl space-y-6">
         <h1 className="font-heading text-2xl font-bold">Company Profile</h1>
 
-        <Card>
+        {/* Logo Upload */}
+        <Card className="glass-card-themed">
+          <CardHeader><CardTitle>Company Logo</CardTitle></CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4">
+              <div className="relative group">
+                <Avatar className="h-20 w-20 rounded-xl">
+                  {logoUrl && <AvatarImage src={logoUrl} alt="Logo" />}
+                  <AvatarFallback className="text-lg bg-primary/10 text-primary rounded-xl">
+                    <Building2 className="h-8 w-8" />
+                  </AvatarFallback>
+                </Avatar>
+                {company && (
+                  <button
+                    onClick={() => logoInputRef.current?.click()}
+                    disabled={uploadingLogo}
+                    className="absolute inset-0 flex items-center justify-center bg-foreground/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  >
+                    <Camera className="h-5 w-5 text-background" />
+                  </button>
+                )}
+                <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+              </div>
+              <div>
+                <p className="text-sm font-medium">{company?.name || "Your Company"}</p>
+                <p className="text-xs text-muted-foreground">
+                  {uploadingLogo ? "Uploading..." : company ? "Hover to change logo" : "Save company first to upload logo"}
+                </p>
+                {company && (
+                  <Button variant="outline" size="sm" className="mt-2" onClick={() => logoInputRef.current?.click()} disabled={uploadingLogo}>
+                    <Upload className="h-3 w-3 mr-1" /> {uploadingLogo ? "Uploading..." : "Upload Logo"}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card-themed">
           <CardHeader><CardTitle>Company Details</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -106,7 +203,7 @@ export default function EmployerCompany() {
         <Button onClick={() => saveMutation.mutate()} disabled={!form.name || saveMutation.isPending}>
           {saveMutation.isPending ? "Saving..." : "Save Company"}
         </Button>
-      </div>
+      </motion.div>
     </DashboardLayout>
   );
 }

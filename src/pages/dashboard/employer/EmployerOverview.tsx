@@ -2,6 +2,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { EmployerSidebar } from "@/components/EmployerSidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +11,8 @@ import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
+import { format } from "date-fns";
+import { StaggerContainer, StaggerItem } from "@/components/StaggerContainer";
 
 function AnimatedCounter({ value }: { value: number }) {
   const count = useMotionValue(0);
@@ -52,22 +55,42 @@ export default function EmployerOverview() {
   const { data: internships } = useQuery({
     queryKey: ["employer-internships", company?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("internships").select("*").eq("company_id", company!.id);
+      const { data } = await supabase.from("internships").select("*").eq("company_id", company!.id).order("created_at", { ascending: false });
       return data ?? [];
     },
     enabled: !!company,
   });
 
   const { data: applications } = useQuery({
-    queryKey: ["employer-applications", company?.id],
+    queryKey: ["employer-applications-overview", company?.id],
     queryFn: async () => {
       const { data } = await supabase
         .from("applications")
-        .select("*, internships!inner(company_id)")
+        .select("id, status, created_at, student_id, internships!inner(title, company_id)")
         .eq("internships.company_id", company!.id)
         .order("created_at", { ascending: false })
-        .limit(10);
-      return data ?? [];
+        .limit(5);
+
+      if (!data?.length) return [];
+
+      // Fetch student profiles for names
+      const studentIds = [...new Set(data.map((a: any) => a.student_id))];
+      const { data: students } = await supabase
+        .from("students")
+        .select("id, user_id")
+        .in("id", studentIds);
+      
+      const userIds = students?.map((s) => s.user_id) ?? [];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", userIds);
+
+      return data.map((app: any) => {
+        const student = students?.find((s) => s.id === app.student_id);
+        const profile = profiles?.find((p) => p.id === student?.user_id);
+        return { ...app, studentName: profile?.full_name || "Student" };
+      });
     },
     enabled: !!company,
   });
@@ -88,6 +111,15 @@ export default function EmployerOverview() {
     { label: "Active Listings", value: internships?.filter(i => i.status === "active").length ?? 0, icon: Eye, color: "text-secondary" },
   ];
 
+  const statusColor: Record<string, string> = {
+    applied: "bg-primary/10 text-primary",
+    shortlisted: "bg-secondary/10 text-secondary",
+    interview: "bg-primary/10 text-primary",
+    offered: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+    rejected: "bg-destructive/10 text-destructive",
+    withdrawn: "bg-muted text-muted-foreground",
+  };
+
   return (
     <DashboardLayout sidebar={<EmployerSidebar />} requiredRole="employer">
       <div className="space-y-6">
@@ -106,23 +138,27 @@ export default function EmployerOverview() {
         </motion.div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {loadingCompany ? (
             Array.from({ length: 4 }).map((_, i) => (
-              <Card key={i}><CardContent className="pt-6">
-                <div className="flex items-center gap-3">
-                  <Skeleton className="h-8 w-8 rounded" />
-                  <div className="space-y-1.5">
-                    <Skeleton className="h-6 w-10" />
-                    <Skeleton className="h-3 w-16" />
-                  </div>
-                </div>
-              </CardContent></Card>
+              <StaggerItem key={i}>
+                <Card className="glass-card-themed">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="h-8 w-8 rounded" />
+                      <div className="space-y-1.5">
+                        <Skeleton className="h-6 w-10" />
+                        <Skeleton className="h-3 w-16" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </StaggerItem>
             ))
           ) : (
             stats.map((s) => (
-              <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-                <Card className="glass-card-themed">
+              <StaggerItem key={s.label}>
+                <Card className="glass-card-themed hover:-translate-y-1 hover:shadow-lg transition-all duration-200">
                   <CardContent className="pt-6">
                     <div className="flex items-center gap-3">
                       <s.icon className={`h-8 w-8 ${s.color}`} />
@@ -133,10 +169,10 @@ export default function EmployerOverview() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </StaggerItem>
             ))
           )}
-        </div>
+        </StaggerContainer>
 
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-3">
@@ -149,31 +185,66 @@ export default function EmployerOverview() {
           ))}
         </div>
 
-        {/* Recent Applications */}
-        <Card>
-          <CardHeader><CardTitle className="text-lg">Recent Applications</CardTitle></CardHeader>
-          <CardContent>
-            {!applications?.length ? (
-              <div className="py-6 text-center">
-                <Users className="h-10 w-10 text-muted-foreground/40 mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground mb-3">No applications received yet.</p>
-                <Button asChild size="sm"><Link to="/dashboard/employer/internships">Post an Internship</Link></Button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {applications.map((app: any) => (
-                  <div key={app.id} className="flex items-center justify-between border-b border-border pb-3 last:border-0">
-                    <div>
-                      <p className="text-sm font-medium">Application #{app.id.slice(0, 8)}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{app.status}</p>
+        {/* Recent Applications — with names */}
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <Card className="glass-card-themed">
+            <CardHeader><CardTitle className="text-lg">Recent Applications</CardTitle></CardHeader>
+            <CardContent>
+              {!applications?.length ? (
+                <div className="py-6 text-center">
+                  <Users className="h-10 w-10 text-muted-foreground/40 mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground mb-3">No applications received yet.</p>
+                  <Button asChild size="sm"><Link to="/dashboard/employer/internships">Post an Internship</Link></Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {applications.map((app: any) => (
+                    <div key={app.id} className="flex items-center justify-between border-b border-border/50 pb-3 last:border-0 last:pb-0">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium">{app.studentName}</p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          Applied to {app.internships?.title} · {format(new Date(app.created_at), "MMM d")}
+                        </p>
+                      </div>
+                      <Badge className={statusColor[app.status] ?? "bg-muted"}>{app.status}</Badge>
                     </div>
-                    <span className="text-xs px-2 py-1 rounded-full bg-muted capitalize">{app.status}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Recent Internships */}
+        {internships && internships.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+            <Card className="glass-card-themed">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">Your Listings</CardTitle>
+                  <Button asChild variant="ghost" size="sm">
+                    <Link to="/dashboard/employer/internships">View All</Link>
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {internships.slice(0, 3).map((i) => (
+                    <div key={i.id} className="flex items-center justify-between border-b border-border/50 pb-3 last:border-0 last:pb-0">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{i.title}</p>
+                        <p className="text-xs text-muted-foreground">{i.work_type} · {i.location || "No location"}</p>
+                      </div>
+                      <Badge className={i.status === "active" ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-muted text-muted-foreground"}>
+                        {i.status}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
       </div>
     </DashboardLayout>
   );

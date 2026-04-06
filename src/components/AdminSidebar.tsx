@@ -1,7 +1,8 @@
 import { Home, Users, Flag, BarChart3, Shield, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { motion } from "framer-motion";
 import {
   Sidebar,
   SidebarContent,
@@ -27,7 +28,13 @@ export function AdminSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const navigate = useNavigate();
+  const location = useLocation();
   const { signOut } = useAuth();
+
+  const isActive = (url: string) => {
+    if (url === "/dashboard/admin") return location.pathname === url;
+    return location.pathname.startsWith(url);
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -43,7 +50,14 @@ export function AdminSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.title} className="relative">
+                  {isActive(item.url) && (
+                    <motion.div
+                      layoutId="admin-sidebar-indicator"
+                      className="absolute left-0 top-0 bottom-0 w-[3px] rounded-r-full bg-primary"
+                      transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                    />
+                  )}
                   <SidebarMenuButton asChild>
                     <NavLink
                       to={item.url}
