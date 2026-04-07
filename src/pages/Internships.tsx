@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { Search, MapPin, Building2, Filter, Clock, Loader2 } from "lucide-react";
+import { Search, MapPin, Building2, Filter, Clock, Loader2, Bookmark } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -48,6 +48,26 @@ export default function Internships() {
     },
     enabled: !!user,
   });
+
+  const { data: savedIds, refetch: refetchSaved } = useQuery({
+    queryKey: ["saved-internships-ids", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("saved_internships").select("internship_id").eq("student_id", user!.id);
+      return new Set((data ?? []).map((s: any) => s.internship_id));
+    },
+    enabled: !!user,
+  });
+
+  const toggleSave = async (internshipId: string) => {
+    if (!user) { toast.error("Log in to save internships"); return; }
+    const isSaved = savedIds?.has(internshipId);
+    if (isSaved) {
+      await supabase.from("saved_internships").delete().eq("student_id", user.id).eq("internship_id", internshipId);
+    } else {
+      await supabase.from("saved_internships").insert({ student_id: user.id, internship_id: internshipId });
+    }
+    refetchSaved();
+  };
 
   const locations = [...new Set(internships?.map(i => i.location).filter(Boolean) ?? [])];
 
@@ -149,10 +169,19 @@ export default function Internships() {
                       <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Building2 className="h-5 w-5 text-primary" />
                       </div>
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <Link to={`/internships/${intern.id}`} className="font-heading font-semibold text-sm hover:text-primary transition-colors">{intern.title}</Link>
                         <p className="text-xs text-muted-foreground">{intern.companies?.name}</p>
                       </div>
+                      {user && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); toggleSave(intern.id); }}
+                          className="shrink-0 p-1 rounded hover:bg-primary/10 transition-colors"
+                          title={savedIds?.has(intern.id) ? "Unsave" : "Save"}
+                        >
+                          <Bookmark className={`h-4 w-4 ${savedIds?.has(intern.id) ? "fill-primary text-primary" : "text-muted-foreground"}`} />
+                        </button>
+                      )}
                     </div>
                     {intern.description && (
                       <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{intern.description}</p>
