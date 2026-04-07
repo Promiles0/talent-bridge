@@ -52,7 +52,12 @@ export function NotificationBell() {
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
-          setNotifications((prev) => [payload.new as Notification, ...prev].slice(0, 10));
+          const newNotif = payload.new as Notification;
+          setNotifications((prev) => [newNotif, ...prev].slice(0, 10));
+          toast(newNotif.title, {
+            description: newNotif.body || undefined,
+            action: newNotif.link ? { label: "View", onClick: () => navigate(newNotif.link!) } : undefined,
+          });
         }
       )
       .subscribe();
