@@ -49,6 +49,26 @@ export default function Internships() {
     enabled: !!user,
   });
 
+  const { data: savedIds, refetch: refetchSaved } = useQuery({
+    queryKey: ["saved-internships-ids", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("saved_internships").select("internship_id").eq("student_id", user!.id);
+      return new Set((data ?? []).map((s: any) => s.internship_id));
+    },
+    enabled: !!user,
+  });
+
+  const toggleSave = async (internshipId: string) => {
+    if (!user) { toast.error("Log in to save internships"); return; }
+    const isSaved = savedIds?.has(internshipId);
+    if (isSaved) {
+      await supabase.from("saved_internships").delete().eq("student_id", user.id).eq("internship_id", internshipId);
+    } else {
+      await supabase.from("saved_internships").insert({ student_id: user.id, internship_id: internshipId });
+    }
+    refetchSaved();
+  };
+
   const locations = [...new Set(internships?.map(i => i.location).filter(Boolean) ?? [])];
 
   const filtered = (internships ?? []).filter((i: any) => {
