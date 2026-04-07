@@ -169,10 +169,19 @@ export default function Internships() {
                       <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Building2 className="h-5 w-5 text-primary" />
                       </div>
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <Link to={`/internships/${intern.id}`} className="font-heading font-semibold text-sm hover:text-primary transition-colors">{intern.title}</Link>
                         <p className="text-xs text-muted-foreground">{intern.companies?.name}</p>
                       </div>
+                      {user && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); toggleSave(intern.id); }}
+                          className="shrink-0 p-1 rounded hover:bg-primary/10 transition-colors"
+                          title={savedIds?.has(intern.id) ? "Unsave" : "Save"}
+                        >
+                          <Bookmark className={`h-4 w-4 ${savedIds?.has(intern.id) ? "fill-primary text-primary" : "text-muted-foreground"}`} />
+                        </button>
+                      )}
                     </div>
                     {intern.description && (
                       <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{intern.description}</p>
