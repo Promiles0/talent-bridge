@@ -198,8 +198,6 @@ export default function EmployerInternships() {
                     )}
                   </div>
                 </div>
-                  
-                </div>
                 <div className="space-y-2">
                   <Label>Description</Label>
                   <Textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={3} />
