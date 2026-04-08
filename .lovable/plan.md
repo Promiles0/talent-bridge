@@ -1,99 +1,106 @@
 
 
-## Phase 9: Preloader Overhaul, Real-Time Toast Notifications, and Final Polish
+## Phase 10: AI-Powered Features + Critical Auth/Data Bug Fix
 
 ---
 
-### 1. Preloader Redesign
+### CRITICAL BUG FIX (Must be done first)
 
-Replace the current `Preloader.tsx` with the advanced design from the user's HTML reference. Key differences from current:
+**Problem**: Users sign up as "student" and can access the student dashboard, but cannot apply for internships ("Only students can apply") and show as "unknown" role in admin.
 
-- **Letter-drop animation** (CSS keyframes, staggered per letter) instead of Framer Motion character reveal
-- **Green dot** after "e" with pulse ring effect (`dotPop` + `ringPulse` keyframes)
-- **Underline sweep** gradient line that animates width 0→100%
-- **Enhanced progress bar** with shimmer gradient, glowing tip dot with box-shadow
-- **Status text** ("Initializing" → percentage) below the bar
-- **Particle canvas** background (simple floating dots, pure canvas, no library)
-- **Exit animation**: scale(0.94) + blur(6px) + fade out on completion
+**Root causes**:
+1. **No triggers are attached in the database** — the trigger functions (`handle_new_user`, `handle_new_user_role`, `notify_application_status_change`, `notify_new_message`) all exist but have ZERO triggers pointing to them. The `students` table has 0 rows despite confirmed student signups.
+2. **No auto-creation of `students` row** — there is no trigger function that creates a `students` record when a user signs up with role "student". Similarly, no `companies` row is created for employers.
+3. **Admin Users query** shows "unknown" because user_roles SELECT policy requires `auth.uid() = user_id`, so the admin can only see their own role — not other users' roles. Need an admin SELECT policy.
 
-Keep the same integration in `main.tsx`. The preloader still calls `onComplete` when the bar reaches 100%. Use our emerald green (`#2ECC71` / `hsl(160 84% 50%)`) throughout — matching the reference but with our brand color.
+**Database migration**:
+- Attach all existing trigger functions to their tables (auth.users for `handle_new_user` and `handle_new_user_role`)
+- Attach `notify_application_status_change` on applications and `notify_new_message` on messages
+- Create a new trigger function `handle_new_student_or_employer` that auto-creates a `students` row (for student role) or `companies` row (for employer role) when a user signs up
+- Add an admin-readable SELECT policy on `user_roles` so the admin dashboard can see all roles
+- Backfill: create `students` rows for existing student users who are missing them
+- Add INSERT policy on `notifications` for trigger functions (they use SECURITY DEFINER so the trigger itself bypasses RLS, but verify)
 
-**File**: `src/components/Preloader.tsx` (full rewrite)
-
----
-
-### 2. Real-Time Notification Toasts on Dashboard
-
-Currently, `NotificationBell.tsx` receives new notifications via Realtime and adds them to the dropdown — but does NOT show a toast. Users only see notifications if they click the bell.
-
-**Fix**: When a new notification arrives via the Realtime subscription in `NotificationBell.tsx`, also fire a `toast()` (sonner) with the notification title and body. Make it clickable to navigate to `n.link`.
-
-This is a small change — add ~3 lines inside the existing `postgres_changes` callback in `NotificationBell.tsx`.
-
-**File**: `src/components/NotificationBell.tsx`
+**Files**: New migration SQL
 
 ---
 
-### 3. Missing DB Triggers (Critical)
+### 1. AI-Powered CV Review (Student CV Builder)
 
-The database shows "There are no triggers in the database" despite having trigger functions (`notify_application_status_change`, `notify_new_message`). This means notifications are NEVER actually created automatically.
+Add an "AI Review" button to `StudentCVBuilder.tsx` that sends the current CV data to a backend function and displays improvement suggestions.
 
-**Migration** to attach triggers:
-```sql
-DROP TRIGGER IF EXISTS on_application_status_change ON applications;
-CREATE TRIGGER on_application_status_change
-  AFTER UPDATE ON applications FOR EACH ROW
-  EXECUTE FUNCTION notify_application_status_change();
+**Backend**: Create edge function `supabase/functions/ai-cv-review/index.ts`
+- Accepts CV data (education, experience, skills, summary)
+- Calls Lovable AI Gateway with a system prompt focused on CV analysis
+- Returns structured suggestions (strengths, improvements, missing sections)
 
-DROP TRIGGER IF EXISTS on_new_message ON messages;
-CREATE TRIGGER on_new_message
-  AFTER INSERT ON messages FOR EACH ROW
-  EXECUTE FUNCTION notify_new_message();
-```
-
-Also need INSERT policy on notifications for the trigger functions (they use `SECURITY DEFINER` so this may already work, but verify).
+**Frontend**: Add a button + results panel in `StudentCVBuilder.tsx`
+- "Get AI Review" button below the CV preview
+- Shows suggestions in a card with categorized feedback (strengths in green, improvements in amber)
+- Loading state with skeleton
 
 ---
 
-### 4. Application Delete Policy (Missing)
+### 2. AI Internship Description Generator (Employer)
 
-Students cannot withdraw applications because there's no DELETE RLS policy on `applications`. Add:
-```sql
-CREATE POLICY "Students can delete own applications"
-ON applications FOR DELETE USING (
-  EXISTS (SELECT 1 FROM students WHERE students.id = applications.student_id AND students.user_id = auth.uid())
-);
-```
+Add an "AI Generate" button to the internship creation form in `EmployerInternships.tsx`.
 
----
+**Backend**: Create edge function `supabase/functions/ai-internship-generator/index.ts`
+- Accepts job title, company name, optional keywords
+- Returns description, requirements, responsibilities as structured text
 
-### 5. Internship Cards — Bookmark Button on Board
-
-Currently the bookmark/save button only exists on the internship detail page. Add a small bookmark icon button to the top-right of every internship card on `/internships` and on the student overview recommended section. Only visible to logged-in students.
-
-**Files**: `src/pages/Internships.tsx`, `src/pages/dashboard/student/StudentOverview.tsx`
+**Frontend**: Add a sparkle button next to the title field in the create internship dialog
+- Click → sends title to edge function → auto-fills description, requirements fields
+- Shows a loading spinner while generating
 
 ---
 
-### 6. Polish Pass
+### 3. AI Career Advisor Chatbot (Student Dashboard)
 
-- **Internship cards hover**: Ensure all cards on `/internships` have the lift+glow hover from GlassCard (already using GlassCard, so this should work)
-- **Empty state animations**: Add `animate-fade-in` class to all empty state containers across dashboards
-- **Preloader respects reduced motion**: Skip animations if `prefers-reduced-motion` is set
+Add a floating chat widget on the student dashboard that provides career advice.
+
+**Backend**: Create edge function `supabase/functions/ai-career-chat/index.ts`
+- Streaming chat endpoint using Lovable AI Gateway
+- System prompt: career advisor for students, interview tips, CV guidance, career planning
+- Sends full conversation history for context
+
+**Frontend**: Create `src/components/AIChatWidget.tsx`
+- Floating button (bottom-right) with expand/collapse
+- Chat interface with message bubbles, markdown rendering
+- Streaming token-by-token display
+- Only visible on student dashboard pages
+
+---
+
+### 4. AI-Powered Smart Internship Matching (Suggested addition)
+
+Enhance the existing "Recommended Internships" section on StudentOverview to use AI for smarter matching.
+
+**Backend**: Create edge function `supabase/functions/ai-match-internships/index.ts`
+- Takes student skills, bio, field of study
+- Takes list of active internships
+- Returns ranked matches with a short reason for each match
+
+**Frontend**: Update the recommended section in `StudentOverview.tsx` to show match percentage and AI-generated reason ("Your Python and React skills align with this role")
 
 ---
 
 ### Implementation Order
-1. Database migration (triggers + delete policy)
-2. Preloader rewrite
-3. NotificationBell toast integration
-4. Bookmark button on internship cards
-5. Polish pass
+1. Database migration (triggers + backfill + policies) — fixes the critical bug
+2. AI CV Review edge function + CV Builder integration
+3. AI Internship Generator edge function + Employer form integration
+4. AI Career Chat edge function + floating widget
+5. AI Smart Matching edge function + StudentOverview update
 
 ### Files to create/edit
-- `supabase/migrations/phase9_triggers.sql` (new)
-- `src/components/Preloader.tsx` (full rewrite)
-- `src/components/NotificationBell.tsx` (add toast on new notification)
-- `src/pages/Internships.tsx` (add bookmark button to cards)
-- `src/pages/dashboard/student/StudentOverview.tsx` (add bookmark to recommended cards)
+- New migration SQL (triggers, policies, backfill)
+- `supabase/functions/ai-cv-review/index.ts` (new)
+- `supabase/functions/ai-internship-generator/index.ts` (new)
+- `supabase/functions/ai-career-chat/index.ts` (new)
+- `supabase/functions/ai-match-internships/index.ts` (new)
+- `src/pages/dashboard/student/StudentCVBuilder.tsx` (add AI review button + results)
+- `src/pages/dashboard/employer/EmployerInternships.tsx` (add AI generate button)
+- `src/components/AIChatWidget.tsx` (new floating chat)
+- `src/pages/dashboard/student/StudentOverview.tsx` (AI match display)
+- `src/components/DashboardLayout.tsx` (include chat widget for students)
 
