@@ -12,8 +12,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
-import { Plus, Trash2, MapPin, Pencil, Users, Briefcase } from "lucide-react";
+import { useState } from "react";
+import { Plus, Trash2, MapPin, Pencil, Users, Briefcase, Sparkles, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { StaggerContainer, StaggerItem } from "@/components/StaggerContainer";
 
@@ -28,6 +28,30 @@ export default function EmployerInternships() {
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  const handleAIGenerate = async () => {
+    if (!form.title.trim()) { toast.error("Enter a title first"); return; }
+    setAiLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-internship-generator", {
+        body: { title: form.title, companyName: company?.id ? "our company" : "" },
+      });
+      if (error) throw error;
+      if (data?.result) {
+        setForm((f) => ({
+          ...f,
+          description: data.result.description || f.description,
+          requirements: data.result.requirements || f.requirements,
+        }));
+        toast.success("AI generated description & requirements!");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "AI generation failed");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const { data: company } = useQuery({
     queryKey: ["company", user?.id],
@@ -165,7 +189,16 @@ export default function EmployerInternships() {
               <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
                 <div className="space-y-2">
                   <Label>Title *</Label>
-                  <Input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
+                  <div className="flex gap-2">
+                    <Input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="flex-1" />
+                    {!editId && (
+                      <Button type="button" variant="outline" size="icon" onClick={handleAIGenerate} disabled={aiLoading || !form.title.trim()} title="AI Generate Description">
+                        {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                  
                 </div>
                 <div className="space-y-2">
                   <Label>Description</Label>
