@@ -6,6 +6,7 @@ import { Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MobileTabBar } from "@/components/MobileTabBar";
+import { AIChatWidget } from "@/components/AIChatWidget";
 import type { ReactNode } from "react";
 
 interface DashboardLayoutProps {
@@ -55,6 +56,7 @@ export function DashboardLayout({ children, sidebar, requiredRole }: DashboardLa
           </main>
         </div>
         <MobileTabBar />
+        {role === "student" && <AIChatWidget />}
       </div>
     </SidebarProvider>
   );
