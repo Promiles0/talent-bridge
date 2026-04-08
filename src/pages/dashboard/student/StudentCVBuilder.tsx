@@ -7,7 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Plus, Trash2, Download, GraduationCap, Briefcase, Globe, Mail, Phone, MapPin } from "lucide-react";
+import { Plus, Trash2, Download, GraduationCap, Briefcase, Globe, Mail, Phone, MapPin, Sparkles, CheckCircle, AlertTriangle, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
 
 interface Education {
@@ -95,6 +97,23 @@ export default function StudentCVBuilder() {
 
   const [newSkill, setNewSkill] = useState("");
   const [newLang, setNewLang] = useState("");
+  const [aiReview, setAiReview] = useState<any>(null);
+  const [reviewLoading, setReviewLoading] = useState(false);
+
+  const handleAIReview = async () => {
+    setReviewLoading(true);
+    setAiReview(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-cv-review", { body: { cvData: cv } });
+      if (error) throw error;
+      if (data?.review) setAiReview(data.review);
+      else throw new Error("No review returned");
+    } catch (e: any) {
+      toast.error(e.message || "Failed to get AI review");
+    } finally {
+      setReviewLoading(false);
+    }
+  };
 
   // Auto-fill from profile data
   useEffect(() => {
@@ -168,9 +187,15 @@ export default function StudentCVBuilder() {
             <h1 className="font-heading text-2xl font-bold">CV Builder</h1>
             <p className="text-sm text-muted-foreground">Build your professional CV and download as PDF.</p>
           </div>
-          <Button onClick={handlePrint} className="gap-2">
-            <Download className="h-4 w-4" /> Download PDF
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleAIReview} variant="outline" disabled={reviewLoading} className="gap-2">
+              {reviewLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+              AI Review
+            </Button>
+            <Button onClick={handlePrint} className="gap-2">
+              <Download className="h-4 w-4" /> Download PDF
+            </Button>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
@@ -301,8 +326,48 @@ export default function StudentCVBuilder() {
             </Card>
           </div>
 
-          {/* Live Preview */}
-          <div className="lg:sticky lg:top-4 h-fit">
+          {/* AI Review Results + Live Preview */}
+          <div className="lg:sticky lg:top-4 h-fit space-y-4">
+            {aiReview && (
+              <Card className="border-primary/20">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary" /> AI Review — {aiReview.overallScore}/100
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">{aiReview.summary}</p>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {aiReview.strengths?.length > 0 && (
+                    <div>
+                      <p className="text-xs font-semibold text-primary mb-1">Strengths</p>
+                      {aiReview.strengths.map((s: string, i: number) => (
+                        <div key={i} className="flex items-start gap-1.5 text-xs text-muted-foreground mb-1">
+                          <CheckCircle className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" /> {s}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {aiReview.improvements?.length > 0 && (
+                    <div>
+                      <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 mb-1">Improvements</p>
+                      {aiReview.improvements.map((s: string, i: number) => (
+                        <div key={i} className="flex items-start gap-1.5 text-xs text-muted-foreground mb-1">
+                          <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" /> {s}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {aiReview.missingSections?.length > 0 && (
+                    <div>
+                      <p className="text-xs font-semibold text-destructive mb-1">Missing Sections</p>
+                      {aiReview.missingSections.map((s: string, i: number) => (
+                        <p key={i} className="text-xs text-muted-foreground ml-4">• {s}</p>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
             <Card className="overflow-hidden">
               <CardHeader className="bg-muted/50">
                 <CardTitle className="text-base">Live Preview</CardTitle>
