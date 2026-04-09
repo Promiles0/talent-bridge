@@ -10,6 +10,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Bookmark, BookmarkCheck, MapPin, Building2, Clock } from "lucide-react";
+import { motion } from "framer-motion";
+import { StaggerContainer, StaggerItem } from "@/components/StaggerContainer";
+import { SkillTag } from "@/components/SkillTag";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
+import { Bookmark, BookmarkCheck, MapPin, Building2, Clock } from "lucide-react";
 
 export default function StudentSavedInternships() {
   const { user } = useAuth();
@@ -49,20 +60,26 @@ export default function StudentSavedInternships() {
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           </div>
         ) : !saved?.length ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Bookmark className="h-12 w-12 text-muted-foreground/40 mx-auto mb-3" />
-              <p className="text-muted-foreground mb-3">No saved internships yet. Bookmark listings to find them here.</p>
-              <Button asChild size="sm"><Link to="/internships">Browse Internships</Link></Button>
-            </CardContent>
-          </Card>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: "spring", stiffness: 200, damping: 20 }}>
+            <Card>
+              <CardContent className="py-12 text-center">
+                <motion.div animate={{ y: [0, -6, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+                  <Bookmark className="h-12 w-12 text-muted-foreground/40 mx-auto mb-3" />
+                </motion.div>
+                <p className="text-muted-foreground mb-3">No saved internships yet. Bookmark listings to find them here.</p>
+                <Button asChild size="sm"><Link to="/internships">Browse Internships</Link></Button>
+              </CardContent>
+            </Card>
+          </motion.div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {saved.map((s: any) => {
               const intern = s.internships;
               if (!intern) return null;
               return (
-                <GlassCard key={s.id}>
+                <StaggerItem key={s.id}>
+                  <motion.div whileHover={{ y: -4, scale: 1.02 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
+                    <GlassCard>
                   <div className="relative">
                     <button
                       onClick={() => unsave.mutate(intern.id)}
@@ -95,10 +112,12 @@ export default function StudentSavedInternships() {
                       <Link to={`/internships/${intern.id}`}>View Details</Link>
                     </Button>
                   </div>
-                </GlassCard>
+                    </GlassCard>
+                  </motion.div>
+                </StaggerItem>
               );
             })}
-          </div>
+          </StaggerContainer>
         )}
       </div>
     </DashboardLayout>
