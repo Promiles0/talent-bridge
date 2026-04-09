@@ -1,106 +1,134 @@
 
 
-## Phase 10: AI-Powered Features + Critical Auth/Data Bug Fix
+## Phase 11: AI Smart Matching, Profile Editing, Sound Notifications, Settings Page, and Student Dashboard Polish
+
+This is a large scope organized into 5 sub-phases.
 
 ---
 
-### CRITICAL BUG FIX (Must be done first)
+### Sub-Phase 11A: Critical — Attach Database Triggers (AGAIN)
 
-**Problem**: Users sign up as "student" and can access the student dashboard, but cannot apply for internships ("Only students can apply") and show as "unknown" role in admin.
+The triggers are STILL not attached despite two previous migrations. This must be fixed first as notifications, profile auto-creation, etc. all depend on them.
 
-**Root causes**:
-1. **No triggers are attached in the database** — the trigger functions (`handle_new_user`, `handle_new_user_role`, `notify_application_status_change`, `notify_new_message`) all exist but have ZERO triggers pointing to them. The `students` table has 0 rows despite confirmed student signups.
-2. **No auto-creation of `students` row** — there is no trigger function that creates a `students` record when a user signs up with role "student". Similarly, no `companies` row is created for employers.
-3. **Admin Users query** shows "unknown" because user_roles SELECT policy requires `auth.uid() = user_id`, so the admin can only see their own role — not other users' roles. Need an admin SELECT policy.
-
-**Database migration**:
-- Attach all existing trigger functions to their tables (auth.users for `handle_new_user` and `handle_new_user_role`)
-- Attach `notify_application_status_change` on applications and `notify_new_message` on messages
-- Create a new trigger function `handle_new_student_or_employer` that auto-creates a `students` row (for student role) or `companies` row (for employer role) when a user signs up
-- Add an admin-readable SELECT policy on `user_roles` so the admin dashboard can see all roles
-- Backfill: create `students` rows for existing student users who are missing them
-- Add INSERT policy on `notifications` for trigger functions (they use SECURITY DEFINER so the trigger itself bypasses RLS, but verify)
-
-**Files**: New migration SQL
+**Migration SQL**: Create triggers on `auth.users` for `handle_new_user`, `handle_new_user_role`, `handle_new_student_or_employer`; on `applications` for `notify_application_status_change`; on `messages` for `notify_new_message`.
 
 ---
 
-### 1. AI-Powered CV Review (Student CV Builder)
+### Sub-Phase 11B: AI Smart Matching on Student Overview
 
-Add an "AI Review" button to `StudentCVBuilder.tsx` that sends the current CV data to a backend function and displays improvement suggestions.
+**Backend**: The edge function `ai-match-internships` already exists. 
 
-**Backend**: Create edge function `supabase/functions/ai-cv-review/index.ts`
-- Accepts CV data (education, experience, skills, summary)
-- Calls Lovable AI Gateway with a system prompt focused on CV analysis
-- Returns structured suggestions (strengths, improvements, missing sections)
-
-**Frontend**: Add a button + results panel in `StudentCVBuilder.tsx`
-- "Get AI Review" button below the CV preview
-- Shows suggestions in a card with categorized feedback (strengths in green, improvements in amber)
-- Loading state with skeleton
+**Frontend** (`StudentOverview.tsx`): Replace the current keyword-based recommended section with AI-powered matching:
+- Fetch student profile (skills, bio, field_of_study) and active internships
+- Call `ai-match-internships` edge function
+- Display match score (percentage badge) and AI-generated reason on each recommended card
+- Fallback to keyword matching if AI call fails
+- Loading skeleton while AI processes
 
 ---
 
-### 2. AI Internship Description Generator (Employer)
+### Sub-Phase 11C: Profile/Account Editing (Name, Email, etc.)
 
-Add an "AI Generate" button to the internship creation form in `EmployerInternships.tsx`.
+**New Settings Page**: `src/pages/dashboard/student/StudentSettings.tsx` and `src/pages/dashboard/employer/EmployerSettings.tsx`
 
-**Backend**: Create edge function `supabase/functions/ai-internship-generator/index.ts`
-- Accepts job title, company name, optional keywords
-- Returns description, requirements, responsibilities as structured text
+Both pages include:
+- **Account section**: Edit full name (updates `profiles` table), email change (via `supabase.auth.updateUser({ email })`), password change
+- **Notification preferences**: Toggle switches for sound notifications and browser push notifications (stored in `localStorage`)
+- **Theme**: Light/dark toggle (already exists, just surface it here too)
+- **AI preferences**: Toggle for AI suggestions (students only)
 
-**Frontend**: Add a sparkle button next to the title field in the create internship dialog
-- Click → sends title to edge function → auto-fills description, requirements fields
-- Shows a loading spinner while generating
+**Routes**: Add `/dashboard/student/settings` and `/dashboard/employer/settings` to `App.tsx`
 
----
+**Sidebars**: Add "Settings" item with gear icon to `StudentSidebar.tsx` and `EmployerSidebar.tsx`
 
-### 3. AI Career Advisor Chatbot (Student Dashboard)
-
-Add a floating chat widget on the student dashboard that provides career advice.
-
-**Backend**: Create edge function `supabase/functions/ai-career-chat/index.ts`
-- Streaming chat endpoint using Lovable AI Gateway
-- System prompt: career advisor for students, interview tips, CV guidance, career planning
-- Sends full conversation history for context
-
-**Frontend**: Create `src/components/AIChatWidget.tsx`
-- Floating button (bottom-right) with expand/collapse
-- Chat interface with message bubbles, markdown rendering
-- Streaming token-by-token display
-- Only visible on student dashboard pages
+**Employer Company page**: Already has name/description/location/website editing — no changes needed there.
 
 ---
 
-### 4. AI-Powered Smart Internship Matching (Suggested addition)
+### Sub-Phase 11D: Sound + Push Notifications
 
-Enhance the existing "Recommended Internships" section on StudentOverview to use AI for smarter matching.
+**New file**: `src/lib/notifications.ts`
 
-**Backend**: Create edge function `supabase/functions/ai-match-internships/index.ts`
-- Takes student skills, bio, field of study
-- Takes list of active internships
-- Returns ranked matches with a short reason for each match
+- `playNotificationSound()`: Uses Web Audio API to generate a short pleasant tone (oscillator-based, no file dependencies)
+- `requestPushPermission()`: Requests browser Notification permission
+- `sendBrowserNotification(title, body, link?)`: Fires `new Notification(...)` if permission granted
+- `isNotificationSoundEnabled()` / `isPushEnabled()`: Read from localStorage
 
-**Frontend**: Update the recommended section in `StudentOverview.tsx` to show match percentage and AI-generated reason ("Your Python and React skills align with this role")
+**Integration** in `NotificationBell.tsx`:
+- When a new notification arrives via Realtime, also call `playNotificationSound()` and `sendBrowserNotification()`
+- Respect user's toggle preferences from localStorage
+
+**Login notification** in `AuthContext.tsx`:
+- After successful `signIn`, fire a toast: "Welcome back, [name]! Logged in at [timestamp]"
+
+---
+
+### Sub-Phase 11E: Student Dashboard UI Polish
+
+Page-by-page enhancements using existing Framer Motion + Tailwind. No new dependencies.
+
+**1. Overview Page** (`StudentOverview.tsx`):
+- Achievement badges: Add glow animation when newly earned (pulse ring effect)
+- Recommendations carousel: Horizontal scroll with snap on mobile
+- Profile completion bar: Bouncy spring animation on value change
+- Stagger all cards with `StaggerContainer`
+
+**2. Profile Page** (`StudentProfile.tsx`):
+- Collapsible sections (click card header to expand/collapse with accordion animation)
+- Skill tags: Add subtle glow on hover (`hover:shadow-[0_0_8px_theme(colors.primary/0.3)]`)
+- Inline edit mode indicator (pen icon that toggles)
+
+**3. Applications Page** (`StudentApplications.tsx`):
+- Timeline view: Vertical timeline connector line between application cards
+- Status badges with animated icon (pulsing dot for "applied", checkmark for "offered")
+- Filter tabs (All, Applied, Shortlisted, etc.) with fade transition
+
+**4. Saved Page** (`StudentSavedInternships.tsx`):
+- Card hover: Scale up slightly + shadow glow (already partially done, enhance)
+- Empty state with bounce animation
+
+**5. Projects Page** (`StudentProjects.tsx`):
+- Cards slide in from bottom (already using StaggerContainer — verify working)
+- Hover: Scale + skill badge glow
+
+**6. Messages Page** (`StudentMessages.tsx`):
+- New message slide-in from bottom with fade
+- Typing indicator (animated dots) when sending
+- Unread badge pulse animation
+
+**7. CV Builder** (`StudentCVBuilder.tsx`):
+- Already has AI review — add subtle section transition animations
+- Step indicator with animated progress dots
+
+**8. Settings Page** (New — covered in Sub-Phase 11C)
 
 ---
 
 ### Implementation Order
-1. Database migration (triggers + backfill + policies) — fixes the critical bug
-2. AI CV Review edge function + CV Builder integration
-3. AI Internship Generator edge function + Employer form integration
-4. AI Career Chat edge function + floating widget
-5. AI Smart Matching edge function + StudentOverview update
+1. Database migration (attach triggers)
+2. AI Smart Matching integration in StudentOverview
+3. Settings pages + sidebar links + routes
+4. Sound + Push notification system
+5. Dashboard UI polish pass (all pages)
 
-### Files to create/edit
-- New migration SQL (triggers, policies, backfill)
-- `supabase/functions/ai-cv-review/index.ts` (new)
-- `supabase/functions/ai-internship-generator/index.ts` (new)
-- `supabase/functions/ai-career-chat/index.ts` (new)
-- `supabase/functions/ai-match-internships/index.ts` (new)
-- `src/pages/dashboard/student/StudentCVBuilder.tsx` (add AI review button + results)
-- `src/pages/dashboard/employer/EmployerInternships.tsx` (add AI generate button)
-- `src/components/AIChatWidget.tsx` (new floating chat)
-- `src/pages/dashboard/student/StudentOverview.tsx` (AI match display)
-- `src/components/DashboardLayout.tsx` (include chat widget for students)
+### Files to Create
+- `src/lib/notifications.ts` (sound + push utilities)
+- `src/pages/dashboard/student/StudentSettings.tsx`
+- `src/pages/dashboard/employer/EmployerSettings.tsx`
+- New migration SQL
+
+### Files to Edit
+- `src/pages/dashboard/student/StudentOverview.tsx` (AI matching + polish)
+- `src/pages/dashboard/student/StudentProfile.tsx` (collapsible sections, glow)
+- `src/pages/dashboard/student/StudentApplications.tsx` (timeline, filters)
+- `src/pages/dashboard/student/StudentSavedInternships.tsx` (hover polish)
+- `src/pages/dashboard/student/StudentProjects.tsx` (animation verify)
+- `src/pages/dashboard/student/StudentMessages.tsx` (slide-in, typing indicator)
+- `src/pages/dashboard/student/StudentCVBuilder.tsx` (section transitions)
+- `src/components/NotificationBell.tsx` (sound + push integration)
+- `src/components/StudentSidebar.tsx` (add Settings link)
+- `src/components/EmployerSidebar.tsx` (add Settings link)
+- `src/components/MobileTabBar.tsx` (no change needed — already good)
+- `src/contexts/AuthContext.tsx` (login welcome toast)
+- `src/App.tsx` (new routes)
 
