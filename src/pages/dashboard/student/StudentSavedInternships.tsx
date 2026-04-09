@@ -12,15 +12,6 @@ import { toast } from "sonner";
 import { Bookmark, BookmarkCheck, MapPin, Building2, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { StaggerContainer, StaggerItem } from "@/components/StaggerContainer";
-import { SkillTag } from "@/components/SkillTag";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
-import { Bookmark, BookmarkCheck, MapPin, Building2, Clock } from "lucide-react";
 
 export default function StudentSavedInternships() {
   const { user } = useAuth();
