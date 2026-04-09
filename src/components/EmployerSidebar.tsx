@@ -26,6 +26,7 @@ const items = [
   { title: "Internships", url: "/dashboard/employer/internships", icon: Briefcase },
   { title: "Applications", url: "/dashboard/employer/applications", icon: Users },
   { title: "Messages", url: "/dashboard/employer/messages", icon: MessageSquare, badgeKey: "messages" as const },
+  { title: "Settings", url: "/dashboard/employer/settings", icon: Settings },
 ];
 
 export function EmployerSidebar() {

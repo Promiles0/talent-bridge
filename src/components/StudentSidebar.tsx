@@ -28,6 +28,7 @@ const items = [
   { title: "Projects", url: "/dashboard/student/projects", icon: FolderKanban },
   { title: "Messages", url: "/dashboard/student/messages", icon: MessageSquare, badgeKey: "messages" as const },
   { title: "CV Builder", url: "/dashboard/student/cv-builder", icon: FileText },
+  { title: "Settings", url: "/dashboard/student/settings", icon: Settings },
 ];
 
 export function StudentSidebar() {
