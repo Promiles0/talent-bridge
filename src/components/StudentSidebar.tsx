@@ -1,4 +1,4 @@
-import { Home, User, Briefcase, FolderKanban, MessageSquare, FileText, LogOut, Bookmark } from "lucide-react";
+import { Home, User, Briefcase, FolderKanban, MessageSquare, FileText, LogOut, Bookmark, Settings } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
