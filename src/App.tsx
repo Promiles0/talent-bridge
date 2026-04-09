@@ -33,6 +33,7 @@ const StudentProjects = lazy(() => import("./pages/dashboard/student/StudentProj
 const StudentMessages = lazy(() => import("./pages/dashboard/student/StudentMessages"));
 const StudentCVBuilder = lazy(() => import("./pages/dashboard/student/StudentCVBuilder"));
 const StudentSavedInternships = lazy(() => import("./pages/dashboard/student/StudentSavedInternships"));
+const StudentSettings = lazy(() => import("./pages/dashboard/student/StudentSettings"));
 
 // Employer Dashboard
 const EmployerOverview = lazy(() => import("./pages/dashboard/employer/EmployerOverview"));
@@ -40,6 +41,7 @@ const EmployerCompany = lazy(() => import("./pages/dashboard/employer/EmployerCo
 const EmployerInternships = lazy(() => import("./pages/dashboard/employer/EmployerInternships"));
 const EmployerApplications = lazy(() => import("./pages/dashboard/employer/EmployerApplications"));
 const EmployerMessages = lazy(() => import("./pages/dashboard/employer/EmployerMessages"));
+const EmployerSettings = lazy(() => import("./pages/dashboard/employer/EmployerSettings"));
 
 // Admin Dashboard
 const AdminOverview = lazy(() => import("./pages/dashboard/admin/AdminOverview"));
@@ -83,6 +85,7 @@ const App = () => (
                 <Route path="/dashboard/student/messages" element={<ProtectedRoute requiredRole="student"><StudentMessages /></ProtectedRoute>} />
                 <Route path="/dashboard/student/cv-builder" element={<ProtectedRoute requiredRole="student"><StudentCVBuilder /></ProtectedRoute>} />
                 <Route path="/dashboard/student/saved" element={<ProtectedRoute requiredRole="student"><StudentSavedInternships /></ProtectedRoute>} />
+                <Route path="/dashboard/student/settings" element={<ProtectedRoute requiredRole="student"><StudentSettings /></ProtectedRoute>} />
 
                 {/* Employer Dashboard */}
                 <Route path="/dashboard/employer" element={<ProtectedRoute requiredRole="employer"><EmployerOverview /></ProtectedRoute>} />
@@ -90,6 +93,7 @@ const App = () => (
                 <Route path="/dashboard/employer/internships" element={<ProtectedRoute requiredRole="employer"><EmployerInternships /></ProtectedRoute>} />
                 <Route path="/dashboard/employer/applications" element={<ProtectedRoute requiredRole="employer"><EmployerApplications /></ProtectedRoute>} />
                 <Route path="/dashboard/employer/messages" element={<ProtectedRoute requiredRole="employer"><EmployerMessages /></ProtectedRoute>} />
+                <Route path="/dashboard/employer/settings" element={<ProtectedRoute requiredRole="employer"><EmployerSettings /></ProtectedRoute>} />
 
                 {/* Admin Dashboard */}
                 <Route path="/dashboard/admin" element={<ProtectedRoute requiredRole="admin"><AdminOverview /></ProtectedRoute>} />

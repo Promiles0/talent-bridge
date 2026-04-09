@@ -285,12 +285,14 @@ export default function StudentProfile() {
             {studentSkills && studentSkills.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {studentSkills.map((ss: any) => (
-                  <Badge key={ss.skill_id} variant="secondary" className="gap-1 pr-1">
-                    {ss.skills?.name}
-                    <button onClick={() => removeSkill(ss.skill_id)} className="ml-1 hover:text-destructive transition-colors">
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
+                  <motion.div key={ss.skill_id} whileHover={{ scale: 1.05 }} className="inline-flex">
+                    <Badge variant="secondary" className="gap-1 pr-1 hover:shadow-[0_0_8px_hsl(var(--primary)/0.3)] transition-shadow">
+                      {ss.skills?.name}
+                      <button onClick={() => removeSkill(ss.skill_id)} className="ml-1 hover:text-destructive transition-colors">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  </motion.div>
                 ))}
               </div>
             )}
