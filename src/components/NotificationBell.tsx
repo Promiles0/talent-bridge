@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { playNotificationSound, sendBrowserNotification } from "@/lib/notifications";
 
 interface Notification {
   id: string;
@@ -54,6 +55,9 @@ export function NotificationBell() {
         (payload) => {
           const newNotif = payload.new as Notification;
           setNotifications((prev) => [newNotif, ...prev].slice(0, 10));
+          // Sound + browser push
+          playNotificationSound();
+          sendBrowserNotification(newNotif.title, newNotif.body || undefined, newNotif.link || undefined);
           toast(newNotif.title, {
             description: newNotif.body || undefined,
             action: newNotif.link ? { label: "View", onClick: () => navigate(newNotif.link!) } : undefined,
