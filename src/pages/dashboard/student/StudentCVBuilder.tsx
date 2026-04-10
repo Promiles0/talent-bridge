@@ -181,7 +181,7 @@ export default function StudentCVBuilder() {
   return (
     <DashboardLayout sidebar={<StudentSidebar />} requiredRole="student">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="font-heading text-2xl font-bold">CV Builder</h1>
             <p className="text-sm text-muted-foreground">Build your professional CV and download as PDF.</p>
@@ -189,10 +189,11 @@ export default function StudentCVBuilder() {
           <div className="flex gap-2">
             <Button onClick={handleAIReview} variant="outline" disabled={reviewLoading} className="gap-2">
               {reviewLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              AI Review
+              <span className="hidden sm:inline">AI Review</span>
+              <span className="sm:hidden">Review</span>
             </Button>
             <Button onClick={handlePrint} className="gap-2">
-              <Download className="h-4 w-4" /> Download PDF
+              <Download className="h-4 w-4" /> <span className="hidden sm:inline">Download PDF</span><span className="sm:hidden">PDF</span>
             </Button>
           </div>
         </div>
@@ -205,12 +206,12 @@ export default function StudentCVBuilder() {
               <CardHeader><CardTitle className="text-base">Personal Information</CardTitle></CardHeader>
               <CardContent className="space-y-3">
                 <Input placeholder="Full Name" value={cv.fullName} onChange={(e) => update("fullName", e.target.value)} />
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Input placeholder="Email" value={cv.email} onChange={(e) => update("email", e.target.value)} />
                   <Input placeholder="Phone" value={cv.phone} onChange={(e) => update("phone", e.target.value)} />
                 </div>
                 <Input placeholder="Location (e.g. Kigali, Rwanda)" value={cv.location} onChange={(e) => update("location", e.target.value)} />
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <Input placeholder="Portfolio URL" value={cv.portfolioUrl} onChange={(e) => update("portfolioUrl", e.target.value)} />
                   <Input placeholder="LinkedIn URL" value={cv.linkedinUrl} onChange={(e) => update("linkedinUrl", e.target.value)} />
                   <Input placeholder="GitHub URL" value={cv.githubUrl} onChange={(e) => update("githubUrl", e.target.value)} />
