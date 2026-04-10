@@ -42,12 +42,18 @@ const EmployerInternships = lazy(() => import("./pages/dashboard/employer/Employ
 const EmployerApplications = lazy(() => import("./pages/dashboard/employer/EmployerApplications"));
 const EmployerMessages = lazy(() => import("./pages/dashboard/employer/EmployerMessages"));
 const EmployerSettings = lazy(() => import("./pages/dashboard/employer/EmployerSettings"));
+const EmployerAnalytics = lazy(() => import("./pages/dashboard/employer/EmployerAnalytics"));
 
 // Admin Dashboard
 const AdminOverview = lazy(() => import("./pages/dashboard/admin/AdminOverview"));
 const AdminUsers = lazy(() => import("./pages/dashboard/admin/AdminUsers"));
 const AdminFlags = lazy(() => import("./pages/dashboard/admin/AdminFlags"));
 const AdminAnalytics = lazy(() => import("./pages/dashboard/admin/AdminAnalytics"));
+const AdminSettings = lazy(() => import("./pages/dashboard/admin/AdminSettings"));
+const AdminContent = lazy(() => import("./pages/dashboard/admin/AdminContent"));
+
+// Student extras
+const StudentInterviewPrep = lazy(() => import("./pages/dashboard/student/StudentInterviewPrep"));
 
 const queryClient = new QueryClient();
 
@@ -86,6 +92,7 @@ const App = () => (
                 <Route path="/dashboard/student/cv-builder" element={<ProtectedRoute requiredRole="student"><StudentCVBuilder /></ProtectedRoute>} />
                 <Route path="/dashboard/student/saved" element={<ProtectedRoute requiredRole="student"><StudentSavedInternships /></ProtectedRoute>} />
                 <Route path="/dashboard/student/settings" element={<ProtectedRoute requiredRole="student"><StudentSettings /></ProtectedRoute>} />
+                <Route path="/dashboard/student/interview-prep" element={<ProtectedRoute requiredRole="student"><StudentInterviewPrep /></ProtectedRoute>} />
 
                 {/* Employer Dashboard */}
                 <Route path="/dashboard/employer" element={<ProtectedRoute requiredRole="employer"><EmployerOverview /></ProtectedRoute>} />
@@ -94,12 +101,15 @@ const App = () => (
                 <Route path="/dashboard/employer/applications" element={<ProtectedRoute requiredRole="employer"><EmployerApplications /></ProtectedRoute>} />
                 <Route path="/dashboard/employer/messages" element={<ProtectedRoute requiredRole="employer"><EmployerMessages /></ProtectedRoute>} />
                 <Route path="/dashboard/employer/settings" element={<ProtectedRoute requiredRole="employer"><EmployerSettings /></ProtectedRoute>} />
+                <Route path="/dashboard/employer/analytics" element={<ProtectedRoute requiredRole="employer"><EmployerAnalytics /></ProtectedRoute>} />
 
                 {/* Admin Dashboard */}
                 <Route path="/dashboard/admin" element={<ProtectedRoute requiredRole="admin"><AdminOverview /></ProtectedRoute>} />
                 <Route path="/dashboard/admin/users" element={<ProtectedRoute requiredRole="admin"><AdminUsers /></ProtectedRoute>} />
                 <Route path="/dashboard/admin/flags" element={<ProtectedRoute requiredRole="admin"><AdminFlags /></ProtectedRoute>} />
                 <Route path="/dashboard/admin/analytics" element={<ProtectedRoute requiredRole="admin"><AdminAnalytics /></ProtectedRoute>} />
+                <Route path="/dashboard/admin/settings" element={<ProtectedRoute requiredRole="admin"><AdminSettings /></ProtectedRoute>} />
+                <Route path="/dashboard/admin/content" element={<ProtectedRoute requiredRole="admin"><AdminContent /></ProtectedRoute>} />
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
