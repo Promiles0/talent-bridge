@@ -34,24 +34,24 @@ export function DashboardLayout({ children, sidebar, requiredRole }: DashboardLa
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         {sidebar}
-        <div className="flex-1 flex flex-col">
-          <header className="h-14 flex items-center border-b border-border bg-card px-4 gap-2">
+        <div className="flex-1 flex flex-col min-w-0">
+          <header className="h-14 flex items-center border-b border-border bg-card px-2 sm:px-4 gap-1 sm:gap-2 shrink-0">
             <SidebarTrigger />
-            <Link to="/" className="font-heading text-lg font-bold tracking-tight hover:opacity-80 transition-opacity">
+            <Link to="/" className="font-heading text-base sm:text-lg font-bold tracking-tight hover:opacity-80 transition-opacity shrink-0">
               <span className="text-foreground">Talent</span>
               <span className="text-primary">Bridge</span>
             </Link>
-            <span className="font-heading text-sm font-semibold text-muted-foreground capitalize ml-2 hidden sm:inline">
+            <span className="font-heading text-sm font-semibold text-muted-foreground capitalize ml-1 hidden min-[480px]:inline truncate">
               {role} Dashboard
             </span>
-            <div className="ml-auto flex items-center gap-1">
+            <div className="ml-auto flex items-center gap-0.5 sm:gap-1 shrink-0">
               <NotificationBell />
-              <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme">
+              <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme" className="h-8 w-8 sm:h-10 sm:w-10">
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
             </div>
           </header>
-          <main className="flex-1 p-6 pb-20 md:pb-6 bg-background overflow-auto">
+          <main className="flex-1 p-3 sm:p-6 pb-24 md:pb-6 bg-background overflow-auto scrollbar-thin">
             {children}
           </main>
         </div>
