@@ -200,7 +200,7 @@ export default function StudentMessages() {
                             transition={{ duration: 0.2 }}
                             className={`flex ${isMe ? "justify-end" : "justify-start"}`}
                           >
-                            <div className={`max-w-[75%] rounded-xl px-3 py-2 text-sm ${
+                            <div className={`max-w-[85%] sm:max-w-[75%] rounded-xl px-3 py-2 text-sm ${
                               isMe ? "bg-primary text-primary-foreground" : "bg-muted"
                             }`}>
                               <p>{msg.content}</p>
@@ -233,7 +233,7 @@ export default function StudentMessages() {
                     )}
                     <div ref={messagesEndRef} />
                   </div>
-                  <div className="flex gap-2 p-3 border-t">
+                  <div className="flex gap-2 p-3 border-t pb-20 md:pb-3">
                     <Textarea
                       value={replyContent}
                       onChange={(e) => setReplyContent(e.target.value)}

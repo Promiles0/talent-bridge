@@ -270,7 +270,7 @@ export default function StudentOverview() {
 
         {/* Stats */}
         <StaggerItem>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {loadingStudent ? (
               Array.from({ length: 4 }).map((_, i) => (
                 <Card key={i}><CardContent className="pt-6"><div className="flex items-center gap-3"><Skeleton className="h-8 w-8 rounded" /><div className="space-y-1.5"><Skeleton className="h-6 w-10" /><Skeleton className="h-3 w-16" /></div></div></CardContent></Card>
@@ -278,13 +278,13 @@ export default function StudentOverview() {
             ) : (
               stats.map((s, i) => (
                 <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: i * 0.08 }}>
-                  <Card className="glass-card-themed hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
-                    <CardContent className="pt-6">
-                      <div className="flex items-center gap-3">
-                        <s.icon className={`h-8 w-8 ${s.color}`} />
-                        <div>
-                          <p className="text-2xl font-bold"><AnimatedCounter value={s.value} /></p>
-                          <p className="text-xs text-muted-foreground">{s.label}</p>
+                    <Card className="glass-card-themed hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+                    <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <s.icon className={`h-6 w-6 sm:h-8 sm:w-8 ${s.color} shrink-0`} />
+                        <div className="min-w-0">
+                          <p className="text-xl sm:text-2xl font-bold"><AnimatedCounter value={s.value} /></p>
+                          <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{s.label}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -313,7 +313,7 @@ export default function StudentOverview() {
           <Card>
             <CardHeader><CardTitle className="text-lg">Your Achievements</CardTitle></CardHeader>
             <CardContent>
-              <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">
+              <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -webkit-overflow-scrolling-touch">
                 {milestonesDef.map((m) => {
                   const earned = earnedSet.has(m.key);
                   return (
