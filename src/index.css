@@ -80,8 +80,8 @@
     --destructive: 0 63% 31%;
     --destructive-foreground: 150 18% 93%;
 
-    --border: 0 0% 100% / 0.06;
-    --input: 0 0% 100% / 0.06;
+    --border: 0 0% 100% / 0.10;
+    --input: 0 0% 100% / 0.10;
     --ring: 160 84% 50%;
 
     --sidebar-background: 240 4% 4%;
@@ -90,11 +90,11 @@
     --sidebar-primary-foreground: 0 0% 5%;
     --sidebar-accent: 240 4% 8%;
     --sidebar-accent-foreground: 150 18% 93%;
-    --sidebar-border: 0 0% 100% / 0.08;
+    --sidebar-border: 0 0% 100% / 0.10;
     --sidebar-ring: 160 84% 50%;
 
-    --glass-bg: 0 0% 100% / 0.04;
-    --glass-border: 0 0% 100% / 0.06;
+    --glass-bg: 0 0% 100% / 0.06;
+    --glass-border: 0 0% 100% / 0.12;
     --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
   }
 }
@@ -286,12 +286,12 @@
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid hsl(var(--glass-border));
   background: hsla(0, 0%, 100%, 0.6);
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 0 hsla(0, 0%, 100%, 0.08);
   border-radius: var(--radius);
 }
 
 .dark .glass-card-themed {
-  background: hsla(0, 0%, 100%, 0.04);
+  background: hsla(0, 0%, 100%, 0.06);
 }
 
 /* Reduced motion preference */
@@ -325,6 +325,104 @@ body,
 body .glass-card,
 body .glass-card-themed {
   transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+}
+
+/* ── New Utility Animations ── */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(160 84% 50% / 0.3); }
+  50% { box-shadow: 0 0 16px 4px hsl(160 84% 50% / 0.2); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ripple-effect {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* Card hover utility */
+.card-hover {
+  @apply transition-all duration-200;
+}
+.card-hover:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 8px 24px -8px hsl(160 84% 50% / 0.15),
+              0 0 0 1px hsl(var(--glass-border));
+}
+
+/* Text gradient utility */
+.text-gradient {
+  background: linear-gradient(135deg, hsl(160 84% 39%), hsl(168 76% 50%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.dark .text-gradient {
+  background: linear-gradient(135deg, hsl(160 84% 50%), hsl(168 76% 55%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Custom thin scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.2) transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 3px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.35);
+}
+
+/* Hide scrollbar but keep scrolling */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Button ripple effect */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, hsla(0, 0%, 100%, 0.3) 10%, transparent 10.01%);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.5s, opacity 0.4s;
+}
+.btn-ripple:active::after {
+  transform: translate(-50%, -50%) scale(4);
+  opacity: 1;
+  transition: 0s;
 }
 
 /* ── Universal Form Input Design System ── */
