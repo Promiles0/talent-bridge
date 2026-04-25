@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          created_at: string
+          criteria: Json | null
+          description: string
+          icon: string | null
+          id: string
+          key: string
+          points: number
+          tier: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          criteria?: Json | null
+          description: string
+          icon?: string | null
+          id?: string
+          key: string
+          points?: number
+          tier: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          criteria?: Json | null
+          description?: string
+          icon?: string | null
+          id?: string
+          key?: string
+          points?: number
+          tier?: string
+          title?: string
+        }
+        Relationships: []
+      }
       applications: {
         Row: {
           cover_letter: string | null
@@ -58,6 +94,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          target_id: string | null
+          target_type: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
       }
       companies: {
         Row: {
@@ -186,6 +252,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      interview_slots: {
+        Row: {
+          application_id: string | null
+          created_at: string
+          employer_id: string
+          end_at: string
+          id: string
+          internship_id: string
+          location: string | null
+          meeting_url: string | null
+          notes: string | null
+          start_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          application_id?: string | null
+          created_at?: string
+          employer_id: string
+          end_at: string
+          id?: string
+          internship_id: string
+          location?: string | null
+          meeting_url?: string | null
+          notes?: string | null
+          start_at: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string | null
+          created_at?: string
+          employer_id?: string
+          end_at?: string
+          id?: string
+          internship_id?: string
+          location?: string | null
+          meeting_url?: string | null
+          notes?: string | null
+          start_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       messages: {
         Row: {
@@ -475,6 +586,35 @@ export type Database = {
           },
         ]
       }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -492,6 +632,33 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      xp_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          points: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          points?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          points?: number
           user_id?: string
         }
         Relationships: []
