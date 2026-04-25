@@ -54,6 +54,9 @@ const AdminContent = lazy(() => import("./pages/dashboard/admin/AdminContent"));
 
 // Student extras
 const StudentInterviewPrep = lazy(() => import("./pages/dashboard/student/StudentInterviewPrep"));
+const StudentAchievements = lazy(() => import("./pages/dashboard/student/StudentAchievements"));
+
+import { CommandPalette } from "@/components/CommandPalette";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +69,7 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <ScrollToTop />
+            <CommandPalette />
             <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -93,6 +97,7 @@ const App = () => (
                 <Route path="/dashboard/student/saved" element={<ProtectedRoute requiredRole="student"><StudentSavedInternships /></ProtectedRoute>} />
                 <Route path="/dashboard/student/settings" element={<ProtectedRoute requiredRole="student"><StudentSettings /></ProtectedRoute>} />
                 <Route path="/dashboard/student/interview-prep" element={<ProtectedRoute requiredRole="student"><StudentInterviewPrep /></ProtectedRoute>} />
+                <Route path="/dashboard/student/achievements" element={<ProtectedRoute requiredRole="student"><StudentAchievements /></ProtectedRoute>} />
 
                 {/* Employer Dashboard */}
                 <Route path="/dashboard/employer" element={<ProtectedRoute requiredRole="employer"><EmployerOverview /></ProtectedRoute>} />
