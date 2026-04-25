@@ -36,10 +36,11 @@ Deno.serve(async (req) => {
       JSON.stringify({ success: true, deleted: deletedCount }),
       { headers: { "Content-Type": "application/json" } }
     );
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("Cleanup error:", err);
+    const message = err instanceof Error ? err.message : "Unknown error";
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({ error: message }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
