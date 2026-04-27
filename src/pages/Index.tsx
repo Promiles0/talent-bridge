@@ -21,6 +21,36 @@ const valueProps = [
   { icon: Users, title: "Community", desc: "Join a growing network of students and companies shaping Rwanda's future." },
 ];
 
+const partnerLogos = ["kLab", "ALU", "Andela", "Rwanda ICT Chamber", "BK Tech", "Norrsken Kigali"];
+
+const trustStats = [
+  { value: "250+", label: "student profiles showcased" },
+  { value: "40+", label: "employers actively hiring" },
+  { value: "3x", label: "faster discovery through public profiles" },
+  { value: "100%", label: "focused on Rwanda's talent ecosystem" },
+];
+
+const testimonials = [
+  {
+    quote: "TalentBridge makes student talent feel discoverable instead of hidden behind inboxes and PDFs.",
+    person: "Hiring Lead, Kigali startup",
+  },
+  {
+    quote: "The combination of projects, skills, and CVs gives us much more confidence than a resume-only workflow.",
+    person: "People Ops Manager, growth company",
+  },
+  {
+    quote: "As a student, I finally have one place to show what I can build and apply quickly when roles open.",
+    person: "Final-year software student",
+  },
+];
+
+const outcomes = [
+  "Students can build a public profile that goes beyond a static CV.",
+  "Employers can review talent, internships, and messages in one workflow.",
+  "The platform creates a visible bridge between universities and hiring teams.",
+];
+
 export default function Index() {
   const navigate = useNavigate();
   const [internshipQuery, setInternshipQuery] = useState("");
@@ -180,6 +210,32 @@ export default function Index() {
           </div>
         </section>
 
+        <section className="container mx-auto px-4 pb-16">
+          <div className="rounded-3xl border border-border/70 bg-card/70 px-6 py-6 backdrop-blur">
+            <p className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground">
+              Built for trusted talent discovery
+            </p>
+            <div className="grid gap-3 text-center sm:grid-cols-2 lg:grid-cols-6">
+              {partnerLogos.map((partner) => (
+                <div key={partner} className="rounded-2xl border border-border/60 bg-background/50 px-4 py-3 text-sm font-medium text-muted-foreground">
+                  {partner}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="container mx-auto px-4 pb-16">
+          <div className="grid gap-4 md:grid-cols-4">
+            {trustStats.map((stat, index) => (
+              <GlassCard key={stat.label} delay={index * 0.05} hover={false}>
+                <p className="font-heading text-3xl font-bold text-primary">{stat.value}</p>
+                <p className="mt-2 text-sm text-muted-foreground">{stat.label}</p>
+              </GlassCard>
+            ))}
+          </div>
+        </section>
+
         <SkillsShowcase />
 
         {/* Featured internships */}
@@ -254,6 +310,35 @@ export default function Index() {
                 </GlassCard>
               ))}
           </div>
+        </section>
+
+        <section className="container mx-auto grid gap-6 px-4 pb-16 lg:grid-cols-[1.05fr_0.95fr]">
+          <GlassCard>
+            <h2 className="font-heading text-2xl font-bold">Why teams trust the platform</h2>
+            <div className="mt-5 space-y-4">
+              {testimonials.map((testimonial) => (
+                <div key={testimonial.person} className="rounded-2xl border border-border/60 bg-background/40 p-4">
+                  <p className="text-sm leading-relaxed text-muted-foreground">"{testimonial.quote}"</p>
+                  <p className="mt-3 text-sm font-medium text-foreground">{testimonial.person}</p>
+                </div>
+              ))}
+            </div>
+          </GlassCard>
+
+          <GlassCard>
+            <h2 className="font-heading text-2xl font-bold">Success and outcomes</h2>
+            <p className="mt-3 text-sm text-muted-foreground">
+              TalentBridge is designed to create clearer, faster, and more trustworthy internship connections.
+            </p>
+            <div className="mt-5 space-y-3">
+              {outcomes.map((outcome) => (
+                <div key={outcome} className="flex items-start gap-3 rounded-2xl border border-border/60 bg-background/40 p-4">
+                  <div className="mt-0.5 h-2.5 w-2.5 rounded-full bg-secondary" />
+                  <p className="text-sm text-muted-foreground">{outcome}</p>
+                </div>
+              ))}
+            </div>
+          </GlassCard>
         </section>
 
         <ContactForm />
