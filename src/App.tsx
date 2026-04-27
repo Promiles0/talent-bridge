@@ -11,6 +11,7 @@ import { lazy, Suspense } from "react";
 
 const Index = lazy(() => import("./pages/Index"));
 const About = lazy(() => import("./pages/About"));
+const ForEmployers = lazy(() => import("./pages/ForEmployers"));
 const ForStudents = lazy(() => import("./pages/ForStudents"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const Students = lazy(() => import("./pages/Students"));
@@ -21,6 +22,7 @@ const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
+const Resources = lazy(() => import("./pages/Resources"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const StudentPublicProfile = lazy(() => import("./pages/StudentPublicProfile"));
 const InternshipDetail = lazy(() => import("./pages/InternshipDetail"));
@@ -76,10 +78,12 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/employers" element={<ForEmployers />} />
                 <Route path="/for-students" element={<ForStudents />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/students" element={<Students />} />
                 <Route path="/internships" element={<Internships />} />
+                <Route path="/resources" element={<Resources />} />
                 <Route path="/internships/:id" element={<InternshipDetail />} />
                 <Route path="/students/:studentId" element={<StudentPublicProfile />} />
                 <Route path="/login" element={<Login />} />
