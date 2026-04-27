@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { StudentSidebar } from "@/components/StudentSidebar";
 import { GlassCard } from "@/components/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -131,7 +132,7 @@ export default function StudentSkillGap() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout sidebar={<StudentSidebar />}>
       <div className="space-y-6">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
