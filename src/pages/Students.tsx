@@ -5,14 +5,15 @@ import { SkillTag } from "@/components/SkillTag";
 import { Input } from "@/components/ui/input";
 import { Search, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Students() {
-  const [query, setQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
 
   const { data: students, isLoading } = useQuery({
     queryKey: ["public-students"],
@@ -32,6 +33,17 @@ export default function Students() {
       }));
     },
   });
+
+  useEffect(() => {
+    const nextParams = new URLSearchParams();
+    const trimmedQuery = query.trim();
+
+    if (trimmedQuery) {
+      nextParams.set("q", trimmedQuery);
+    }
+
+    setSearchParams(nextParams, { replace: true });
+  }, [query, setSearchParams]);
 
   const filtered = (students ?? []).filter(
     (s) =>

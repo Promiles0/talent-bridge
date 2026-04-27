@@ -5,7 +5,6 @@ import { SkillTag } from "@/components/SkillTag";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Briefcase, Users, ArrowRight, MapPin, Building2, GraduationCap } from "lucide-react";
-import { Link } from "react-router-dom";
 import { TypewriterEffect } from "@/components/TypewriterEffect";
 import { SkillsShowcase } from "@/components/SkillsShowcase";
 import { ContactForm } from "@/components/ContactForm";
@@ -13,6 +12,8 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { KeyboardEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const valueProps = [
   { icon: GraduationCap, title: "For Students", desc: "Showcase your skills, build your portfolio, and land your dream internship." },
@@ -21,6 +22,10 @@ const valueProps = [
 ];
 
 export default function Index() {
+  const navigate = useNavigate();
+  const [internshipQuery, setInternshipQuery] = useState("");
+  const [studentQuery, setStudentQuery] = useState("");
+
   const { data: featuredInternships, isLoading: loadingInternships } = useQuery({
     queryKey: ["featured-internships"],
     queryFn: async () => {
@@ -74,6 +79,31 @@ export default function Index() {
     </div>
   );
 
+  const handleInternshipSearch = () => {
+    const query = internshipQuery.trim();
+    navigate(query ? `/internships?q=${encodeURIComponent(query)}` : "/internships");
+  };
+
+  const handleStudentSearch = () => {
+    const query = studentQuery.trim();
+    navigate(query ? `/students?q=${encodeURIComponent(query)}` : "/students");
+  };
+
+  const handleSearchKeyDown = (event: KeyboardEvent<HTMLInputElement>, searchType: "internships" | "students") => {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (searchType === "internships") {
+      handleInternshipSearch();
+      return;
+    }
+
+    handleStudentSearch();
+  };
+
   return (
     <Layout>
       <PageTransition>
@@ -90,18 +120,37 @@ export default function Index() {
             </p>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search internships..." className="pl-9 h-12 bg-card" />
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="flex flex-col gap-3 max-w-3xl mx-auto mb-6">
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search internships..."
+                  value={internshipQuery}
+                  onChange={(event) => setInternshipQuery(event.target.value)}
+                  onKeyDown={(event) => handleSearchKeyDown(event, "internships")}
+                  className="pl-9 h-12 bg-card"
+                />
+              </div>
+              <div className="relative">
+                <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search students..."
+                  value={studentQuery}
+                  onChange={(event) => setStudentQuery(event.target.value)}
+                  onKeyDown={(event) => handleSearchKeyDown(event, "students")}
+                  className="pl-9 h-12 bg-card"
+                />
+              </div>
             </div>
-            <div className="relative flex-1">
-              <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search students..." className="pl-9 h-12 bg-card" />
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
+              <Button size="lg" className="h-12 px-6" onClick={handleInternshipSearch}>
+                <Search className="h-4 w-4 mr-2" /> Search internships
+              </Button>
+              <Button size="lg" variant="outline" className="h-12 px-6" onClick={handleStudentSearch}>
+                <Users className="h-4 w-4 mr-2" /> Search students
+              </Button>
             </div>
-            <Button size="lg" className="h-12 px-6">
-              <Search className="h-4 w-4 mr-2" /> Search
-            </Button>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }} className="flex justify-center gap-4">

@@ -7,22 +7,23 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Search, MapPin, Building2, Filter, Clock, Loader2, Bookmark } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 const PAGE_SIZE = 9;
 
 export default function Internships() {
   const { user } = useAuth();
-  const [query, setQuery] = useState("");
-  const [locationFilter, setLocationFilter] = useState("all");
-  const [typeFilter, setTypeFilter] = useState("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
+  const [locationFilter, setLocationFilter] = useState(() => searchParams.get("location") ?? "all");
+  const [typeFilter, setTypeFilter] = useState(() => searchParams.get("type") ?? "all");
   const [page, setPage] = useState(1);
   const [applyDialog, setApplyDialog] = useState<{ open: boolean; internshipId: string; title: string }>({ open: false, internshipId: "", title: "" });
   const [coverLetter, setCoverLetter] = useState("");
@@ -48,6 +49,23 @@ export default function Internships() {
     },
     enabled: !!user,
   });
+
+  useEffect(() => {
+    const nextParams = new URLSearchParams();
+    const trimmedQuery = query.trim();
+
+    if (trimmedQuery) {
+      nextParams.set("q", trimmedQuery);
+    }
+    if (locationFilter !== "all") {
+      nextParams.set("location", locationFilter);
+    }
+    if (typeFilter !== "all") {
+      nextParams.set("type", typeFilter);
+    }
+
+    setSearchParams(nextParams, { replace: true });
+  }, [locationFilter, query, setSearchParams, typeFilter]);
 
   const { data: savedIds, refetch: refetchSaved } = useQuery({
     queryKey: ["saved-internships-ids", user?.id],
