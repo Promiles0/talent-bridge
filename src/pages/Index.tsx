@@ -159,7 +159,7 @@ export default function Index() {
                 Join as Student <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
-            <Link to="/signup">
+            <Link to="/employers">
               <Button size="lg" variant="outline" className="border-secondary/30 text-secondary hover:bg-secondary/10 hover-scale">
                 Post an Internship <Briefcase className="ml-2 h-4 w-4" />
               </Button>
