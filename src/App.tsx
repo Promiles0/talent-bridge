@@ -11,6 +11,7 @@ import { lazy, Suspense } from "react";
 
 const Index = lazy(() => import("./pages/Index"));
 const About = lazy(() => import("./pages/About"));
+const ForStudents = lazy(() => import("./pages/ForStudents"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const Students = lazy(() => import("./pages/Students"));
 const Internships = lazy(() => import("./pages/Internships"));
@@ -75,6 +76,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/for-students" element={<ForStudents />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/students" element={<Students />} />
                 <Route path="/internships" element={<Internships />} />

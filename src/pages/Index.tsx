@@ -154,7 +154,7 @@ export default function Index() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }} className="flex justify-center gap-4">
-            <Link to="/signup">
+            <Link to="/for-students">
               <Button size="lg" variant="outline" className="hover-scale">
                 Join as Student <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
