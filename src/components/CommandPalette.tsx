@@ -12,7 +12,7 @@ import {
 import {
   Home, User, Briefcase, FolderKanban, MessageSquare, FileText,
   Bookmark, Settings, Brain, Building2, Users, BarChart3, Flag,
-  Trophy, Sun, Moon, LogOut, Search,
+  Trophy, Sun, Moon, LogOut, Search, Target, CalendarDays, Sparkles, History,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/components/ThemeProvider";
@@ -27,12 +27,14 @@ interface NavItem {
 const studentNav: NavItem[] = [
   { label: "Overview", to: "/dashboard/student", icon: Home },
   { label: "Profile", to: "/dashboard/student/profile", icon: User },
+  { label: "Calendar", to: "/dashboard/student/calendar", icon: CalendarDays },
   { label: "Applications", to: "/dashboard/student/applications", icon: Briefcase },
   { label: "Saved Internships", to: "/dashboard/student/saved", icon: Bookmark },
   { label: "Projects", to: "/dashboard/student/projects", icon: FolderKanban },
   { label: "Messages", to: "/dashboard/student/messages", icon: MessageSquare },
   { label: "CV Builder", to: "/dashboard/student/cv-builder", icon: FileText },
   { label: "Interview Prep", to: "/dashboard/student/interview-prep", icon: Brain },
+  { label: "Skill Gap", to: "/dashboard/student/skill-gap", icon: Target },
   { label: "Achievements", to: "/dashboard/student/achievements", icon: Trophy },
   { label: "Settings", to: "/dashboard/student/settings", icon: Settings },
 ];
@@ -40,6 +42,8 @@ const studentNav: NavItem[] = [
 const employerNav: NavItem[] = [
   { label: "Overview", to: "/dashboard/employer", icon: Home },
   { label: "Company", to: "/dashboard/employer/company", icon: Building2 },
+  { label: "Branding Studio", to: "/dashboard/employer/branding", icon: Sparkles },
+  { label: "Talent Search", to: "/dashboard/employer/talent", icon: Search },
   { label: "Internships", to: "/dashboard/employer/internships", icon: Briefcase },
   { label: "Applications", to: "/dashboard/employer/applications", icon: Users },
   { label: "Analytics", to: "/dashboard/employer/analytics", icon: BarChart3 },
@@ -53,6 +57,7 @@ const adminNav: NavItem[] = [
   { label: "Flags", to: "/dashboard/admin/flags", icon: Flag },
   { label: "Analytics", to: "/dashboard/admin/analytics", icon: BarChart3 },
   { label: "Content", to: "/dashboard/admin/content", icon: FileText },
+  { label: "Audit Log", to: "/dashboard/admin/audit", icon: History },
   { label: "Settings", to: "/dashboard/admin/settings", icon: Settings },
 ];
 
