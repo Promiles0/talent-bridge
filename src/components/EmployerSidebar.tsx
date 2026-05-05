@@ -1,4 +1,4 @@
-import { Home, Building2, Briefcase, Users, MessageSquare, LogOut, Settings, BarChart3 } from "lucide-react";
+import { Home, Building2, Briefcase, Users, MessageSquare, LogOut, Settings, BarChart3, Search, Sparkles } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
