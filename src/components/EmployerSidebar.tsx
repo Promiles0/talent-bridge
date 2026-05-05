@@ -23,6 +23,8 @@ import { Badge } from "./ui/badge";
 const items = [
   { title: "Overview", url: "/dashboard/employer", icon: Home },
   { title: "Company", url: "/dashboard/employer/company", icon: Building2 },
+  { title: "Branding Studio", url: "/dashboard/employer/branding", icon: Sparkles },
+  { title: "Talent Search", url: "/dashboard/employer/talent", icon: Search },
   { title: "Internships", url: "/dashboard/employer/internships", icon: Briefcase },
   { title: "Applications", url: "/dashboard/employer/applications", icon: Users },
   { title: "Analytics", url: "/dashboard/employer/analytics", icon: BarChart3 },
