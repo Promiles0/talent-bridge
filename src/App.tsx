@@ -113,6 +113,8 @@ const App = () => (
                 <Route path="/dashboard/employer/messages" element={<ProtectedRoute requiredRole="employer"><EmployerMessages /></ProtectedRoute>} />
                 <Route path="/dashboard/employer/settings" element={<ProtectedRoute requiredRole="employer"><EmployerSettings /></ProtectedRoute>} />
                 <Route path="/dashboard/employer/analytics" element={<ProtectedRoute requiredRole="employer"><EmployerAnalytics /></ProtectedRoute>} />
+                <Route path="/dashboard/employer/talent" element={<ProtectedRoute requiredRole="employer"><EmployerTalent /></ProtectedRoute>} />
+                <Route path="/dashboard/employer/branding" element={<ProtectedRoute requiredRole="employer"><EmployerBranding /></ProtectedRoute>} />
 
                 {/* Admin Dashboard */}
                 <Route path="/dashboard/admin" element={<ProtectedRoute requiredRole="admin"><AdminOverview /></ProtectedRoute>} />
@@ -121,6 +123,7 @@ const App = () => (
                 <Route path="/dashboard/admin/analytics" element={<ProtectedRoute requiredRole="admin"><AdminAnalytics /></ProtectedRoute>} />
                 <Route path="/dashboard/admin/settings" element={<ProtectedRoute requiredRole="admin"><AdminSettings /></ProtectedRoute>} />
                 <Route path="/dashboard/admin/content" element={<ProtectedRoute requiredRole="admin"><AdminContent /></ProtectedRoute>} />
+                <Route path="/dashboard/admin/audit" element={<ProtectedRoute requiredRole="admin"><AdminAudit /></ProtectedRoute>} />
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
