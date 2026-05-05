@@ -49,7 +49,7 @@ export function DashboardLayout({ children, sidebar, requiredRole }: DashboardLa
             <div className="ml-auto flex items-center gap-0.5 sm:gap-1 shrink-0">
               <NotificationBell />
               <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme" className="h-8 w-8 sm:h-10 sm:w-10">
-                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {theme === "midnight" ? <Sparkles className="h-4 w-4" /> : theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
             </div>
           </header>
