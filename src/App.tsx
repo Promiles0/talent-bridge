@@ -56,6 +56,10 @@ const AdminContent = lazy(() => import("./pages/dashboard/admin/AdminContent"));
 const StudentInterviewPrep = lazy(() => import("./pages/dashboard/student/StudentInterviewPrep"));
 const StudentAchievements = lazy(() => import("./pages/dashboard/student/StudentAchievements"));
 const StudentSkillGap = lazy(() => import("./pages/dashboard/student/StudentSkillGap"));
+const StudentCalendar = lazy(() => import("./pages/dashboard/student/StudentCalendar"));
+const EmployerTalent = lazy(() => import("./pages/dashboard/employer/EmployerTalent"));
+const EmployerBranding = lazy(() => import("./pages/dashboard/employer/EmployerBranding"));
+const AdminAudit = lazy(() => import("./pages/dashboard/admin/AdminAudit"));
 
 import { CommandPalette } from "@/components/CommandPalette";
 
