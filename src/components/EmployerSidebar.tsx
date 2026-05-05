@@ -1,4 +1,4 @@
-import { Home, Building2, Briefcase, Users, MessageSquare, LogOut, Settings, BarChart3 } from "lucide-react";
+import { Home, Building2, Briefcase, Users, MessageSquare, LogOut, Settings, BarChart3, Search, Sparkles } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,6 +23,8 @@ import { Badge } from "./ui/badge";
 const items = [
   { title: "Overview", url: "/dashboard/employer", icon: Home },
   { title: "Company", url: "/dashboard/employer/company", icon: Building2 },
+  { title: "Branding Studio", url: "/dashboard/employer/branding", icon: Sparkles },
+  { title: "Talent Search", url: "/dashboard/employer/talent", icon: Search },
   { title: "Internships", url: "/dashboard/employer/internships", icon: Briefcase },
   { title: "Applications", url: "/dashboard/employer/applications", icon: Users },
   { title: "Analytics", url: "/dashboard/employer/analytics", icon: BarChart3 },

@@ -2,11 +2,12 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/components/ThemeProvider";
 import { Navigate, Link } from "react-router-dom";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MobileTabBar } from "@/components/MobileTabBar";
 import { AIChatWidget } from "@/components/AIChatWidget";
+import { usePresenceHeartbeat } from "@/lib/realtime";
 import type { ReactNode } from "react";
 
 interface DashboardLayoutProps {
@@ -18,6 +19,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children, sidebar, requiredRole }: DashboardLayoutProps) {
   const { user, role, loading } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  usePresenceHeartbeat();
 
   if (loading) {
     return (
@@ -47,7 +49,7 @@ export function DashboardLayout({ children, sidebar, requiredRole }: DashboardLa
             <div className="ml-auto flex items-center gap-0.5 sm:gap-1 shrink-0">
               <NotificationBell />
               <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme" className="h-8 w-8 sm:h-10 sm:w-10">
-                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {theme === "midnight" ? <Sparkles className="h-4 w-4" /> : theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
             </div>
           </header>

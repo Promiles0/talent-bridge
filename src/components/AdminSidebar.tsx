@@ -1,4 +1,4 @@
-import { Home, Users, Flag, BarChart3, Shield, LogOut, Settings, FileText } from "lucide-react";
+import { Home, Users, Flag, BarChart3, Shield, LogOut, Settings, FileText, History } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -23,6 +23,7 @@ const items = [
   { title: "Flags", url: "/dashboard/admin/flags", icon: Flag },
   { title: "Analytics", url: "/dashboard/admin/analytics", icon: BarChart3 },
   { title: "Content", url: "/dashboard/admin/content", icon: FileText },
+  { title: "Audit Log", url: "/dashboard/admin/audit", icon: History },
   { title: "Settings", url: "/dashboard/admin/settings", icon: Settings },
 ];
 

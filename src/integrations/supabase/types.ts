@@ -125,39 +125,114 @@ export type Database = {
         }
         Relationships: []
       }
-      companies: {
+      calendar_events: {
         Row: {
+          color: string | null
           created_at: string
           description: string | null
+          ends_at: string | null
           id: string
+          link: string | null
+          location: string | null
+          related_application_id: string | null
+          related_internship_id: string | null
+          starts_at: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          link?: string | null
+          location?: string | null
+          related_application_id?: string | null
+          related_internship_id?: string | null
+          starts_at: string
+          title: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          link?: string | null
+          location?: string | null
+          related_application_id?: string | null
+          related_internship_id?: string | null
+          starts_at?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      companies: {
+        Row: {
+          brand_color: string | null
+          created_at: string
+          culture_values: Json | null
+          description: string | null
+          gallery: Json | null
+          hero_image_url: string | null
+          id: string
+          industry: string | null
           location: string | null
           logo_url: string | null
           name: string
           owner_id: string
+          size: string | null
+          story: string | null
+          tagline: string | null
           updated_at: string
           verified: boolean
           website: string | null
         }
         Insert: {
+          brand_color?: string | null
           created_at?: string
+          culture_values?: Json | null
           description?: string | null
+          gallery?: Json | null
+          hero_image_url?: string | null
           id?: string
+          industry?: string | null
           location?: string | null
           logo_url?: string | null
           name: string
           owner_id: string
+          size?: string | null
+          story?: string | null
+          tagline?: string | null
           updated_at?: string
           verified?: boolean
           website?: string | null
         }
         Update: {
+          brand_color?: string | null
           created_at?: string
+          culture_values?: Json | null
           description?: string | null
+          gallery?: Json | null
+          hero_image_url?: string | null
           id?: string
+          industry?: string | null
           location?: string | null
           logo_url?: string | null
           name?: string
           owner_id?: string
+          size?: string | null
+          story?: string | null
+          tagline?: string | null
           updated_at?: string
           verified?: boolean
           website?: string | null
@@ -358,6 +433,24 @@ export type Database = {
         }
         Relationships: []
       }
+      presence: {
+        Row: {
+          last_seen_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          last_seen_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          last_seen_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -454,6 +547,35 @@ export type Database = {
             columns: ["internship_id"]
             isOneToOne: false
             referencedRelation: "internships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shortlist_members: {
+        Row: {
+          added_at: string
+          notes: string | null
+          shortlist_id: string
+          student_id: string
+        }
+        Insert: {
+          added_at?: string
+          notes?: string | null
+          shortlist_id: string
+          student_id: string
+        }
+        Update: {
+          added_at?: string
+          notes?: string | null
+          shortlist_id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shortlist_members_shortlist_id_fkey"
+            columns: ["shortlist_id"]
+            isOneToOne: false
+            referencedRelation: "talent_shortlists"
             referencedColumns: ["id"]
           },
         ]
@@ -585,6 +707,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      talent_shortlists: {
+        Row: {
+          created_at: string
+          employer_id: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          employer_id: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          employer_id?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      typing_indicators: {
+        Row: {
+          conversation_key: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_key: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          conversation_key?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_achievements: {
         Row: {
