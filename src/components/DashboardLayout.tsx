@@ -19,6 +19,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children, sidebar, requiredRole }: DashboardLayoutProps) {
   const { user, role, loading } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  usePresenceHeartbeat();
 
   if (loading) {
     return (
