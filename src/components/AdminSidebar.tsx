@@ -23,6 +23,7 @@ const items = [
   { title: "Flags", url: "/dashboard/admin/flags", icon: Flag },
   { title: "Analytics", url: "/dashboard/admin/analytics", icon: BarChart3 },
   { title: "Content", url: "/dashboard/admin/content", icon: FileText },
+  { title: "Audit Log", url: "/dashboard/admin/audit", icon: History },
   { title: "Settings", url: "/dashboard/admin/settings", icon: Settings },
 ];
 
