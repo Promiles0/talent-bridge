@@ -26,6 +26,7 @@ const items = [
   { title: "Applications", url: "/dashboard/student/applications", icon: Briefcase },
   { title: "Saved", url: "/dashboard/student/saved", icon: Bookmark },
   { title: "Projects", url: "/dashboard/student/projects", icon: FolderKanban },
+  { title: "Calendar", url: "/dashboard/student/calendar", icon: CalendarDays },
   { title: "Messages", url: "/dashboard/student/messages", icon: MessageSquare, badgeKey: "messages" as const },
   { title: "CV Builder", url: "/dashboard/student/cv-builder", icon: FileText },
   { title: "Interview Prep", url: "/dashboard/student/interview-prep", icon: Brain },
