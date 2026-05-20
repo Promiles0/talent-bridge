@@ -11,6 +11,7 @@ import { useParams, Link } from "react-router-dom";
 import { Github, Linkedin, Globe, ExternalLink, MapPin, GraduationCap, ArrowLeft, Download, Mail, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { StaggerContainer, StaggerItem } from "@/components/StaggerContainer";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
