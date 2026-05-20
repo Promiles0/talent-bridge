@@ -140,7 +140,11 @@ export default function EmployerTalent() {
           <p className="text-muted-foreground text-sm">Find Rwandan students that match your roles — with AI ranking.</p>
         </div>
 
-        <Card className="p-4">
+        <Card className="p-4 space-y-3">
+          <div className="flex items-center gap-2 text-xs">
+            <Switch checked={verifiedOnly} onCheckedChange={(v) => { setVerifiedOnly(v); }} id="verified-only" />
+            <label htmlFor="verified-only" className="cursor-pointer">Verified students only</label>
+          </div>
           <div className="flex flex-wrap gap-2">
             <div className="flex-1 min-w-[200px] flex gap-2">
               <Input
