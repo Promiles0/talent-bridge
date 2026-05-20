@@ -11,6 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Loader2, Save, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { VerificationPanel } from "@/components/VerificationPanel";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 type Company = {
   id: string;
@@ -87,6 +89,7 @@ export default function EmployerBranding() {
           <div>
             <h1 className="font-heading text-2xl sm:text-3xl font-bold flex items-center gap-2">
               <Sparkles className="h-7 w-7 text-primary" /> Branding Studio
+              <VerifiedBadge verified={(c as any).verified} kind="company" size="md" />
             </h1>
             <p className="text-muted-foreground text-sm">Craft a brand that attracts the best Rwandan talent.</p>
           </div>
@@ -94,6 +97,9 @@ export default function EmployerBranding() {
             {saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />} Save
           </Button>
         </div>
+
+        <VerificationPanel kind="company" alreadyVerified={(c as any).verified} />
+
 
         <Tabs defaultValue="identity">
           <TabsList>

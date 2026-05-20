@@ -14,6 +14,8 @@ import { toast } from "sonner";
 import { useState, useEffect, useRef } from "react";
 import { Upload, FileText, X, Camera, Plus, Search } from "lucide-react";
 import { motion } from "framer-motion";
+import { VerificationPanel } from "@/components/VerificationPanel";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
@@ -222,7 +224,10 @@ export default function StudentProfile() {
   return (
     <DashboardLayout sidebar={<StudentSidebar />} requiredRole="student">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl space-y-6">
-        <h1 className="font-heading text-2xl font-bold">My Profile</h1>
+        <h1 className="font-heading text-2xl font-bold flex items-center gap-2">My Profile <VerifiedBadge verified={(student as any)?.verified} kind="student" size="md" /></h1>
+
+        <VerificationPanel kind="student" alreadyVerified={(student as any)?.verified} />
+
 
         {/* Avatar & CV */}
         <Card className="glass-card-themed">
