@@ -60,6 +60,7 @@ const StudentCalendar = lazy(() => import("./pages/dashboard/student/StudentCale
 const EmployerTalent = lazy(() => import("./pages/dashboard/employer/EmployerTalent"));
 const EmployerBranding = lazy(() => import("./pages/dashboard/employer/EmployerBranding"));
 const AdminAudit = lazy(() => import("./pages/dashboard/admin/AdminAudit"));
+const AdminVerifications = lazy(() => import("./pages/dashboard/admin/AdminVerifications"));
 
 import { CommandPalette } from "@/components/CommandPalette";
 
@@ -125,6 +126,7 @@ const App = () => (
                 <Route path="/dashboard/admin/settings" element={<ProtectedRoute requiredRole="admin"><AdminSettings /></ProtectedRoute>} />
                 <Route path="/dashboard/admin/content" element={<ProtectedRoute requiredRole="admin"><AdminContent /></ProtectedRoute>} />
                 <Route path="/dashboard/admin/audit" element={<ProtectedRoute requiredRole="admin"><AdminAudit /></ProtectedRoute>} />
+                <Route path="/dashboard/admin/verifications" element={<ProtectedRoute requiredRole="admin"><AdminVerifications /></ProtectedRoute>} />
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
