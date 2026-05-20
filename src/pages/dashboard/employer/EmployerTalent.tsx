@@ -14,6 +14,8 @@ import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { PresenceDot } from "@/components/PresenceDot";
 import { usePresenceFor, usePresenceHeartbeat } from "@/lib/realtime";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
+import { Switch } from "@/components/ui/switch";
 
 type StudentRow = {
   id: string;
@@ -22,6 +24,7 @@ type StudentRow = {
   field_of_study: string | null;
   university: string | null;
   available: boolean;
+  verified: boolean | null;
   profiles: { full_name: string | null; avatar_url: string | null } | null;
   student_skills: { skills: { name: string } | null }[];
 };
@@ -38,6 +41,7 @@ export default function EmployerTalent() {
   const [shortlists, setShortlists] = useState<{ id: string; name: string }[]>([]);
   const [activeShortlist, setActiveShortlist] = useState<string | null>(null);
   const [members, setMembers] = useState<Record<string, true>>({});
+  const [verifiedOnly, setVerifiedOnly] = useState(true);
 
   const presence = usePresenceFor(results.map(r => r.user_id).filter(Boolean));
 
@@ -45,9 +49,10 @@ export default function EmployerTalent() {
     setLoading(true);
     let q = supabase
       .from("students")
-      .select("id,user_id,headline,field_of_study,university,available,profiles!inner(full_name,avatar_url),student_skills(skills(name))")
+      .select("id,user_id,headline,field_of_study,university,available,verified,profiles!inner(full_name,avatar_url),student_skills(skills(name))")
       .eq("available", true)
       .limit(40);
+    if (verifiedOnly) q = q.eq("verified", true);
     if (query && !aiMode) {
       q = q.or(`headline.ilike.%${query}%,field_of_study.ilike.%${query}%,university.ilike.%${query}%`);
     }
@@ -135,7 +140,11 @@ export default function EmployerTalent() {
           <p className="text-muted-foreground text-sm">Find Rwandan students that match your roles — with AI ranking.</p>
         </div>
 
-        <Card className="p-4">
+        <Card className="p-4 space-y-3">
+          <div className="flex items-center gap-2 text-xs">
+            <Switch checked={verifiedOnly} onCheckedChange={(v) => { setVerifiedOnly(v); }} id="verified-only" />
+            <label htmlFor="verified-only" className="cursor-pointer">Verified students only</label>
+          </div>
           <div className="flex flex-wrap gap-2">
             <div className="flex-1 min-w-[200px] flex gap-2">
               <Input
@@ -202,8 +211,9 @@ export default function EmployerTalent() {
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <Link to={`/students/${s.id}`} className="font-semibold hover:text-primary truncate block">
-                        {s.profiles?.full_name ?? "Student"}
+                      <Link to={`/students/${s.id}`} className="font-semibold hover:text-primary truncate flex items-center gap-1">
+                        <span className="truncate">{s.profiles?.full_name ?? "Student"}</span>
+                        <VerifiedBadge verified={s.verified} kind="student" />
                       </Link>
                       <p className="text-xs text-muted-foreground truncate">{s.headline ?? s.field_of_study}</p>
                       <p className="text-xs text-muted-foreground truncate">{s.university}</p>

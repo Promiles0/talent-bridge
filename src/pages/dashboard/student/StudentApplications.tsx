@@ -14,6 +14,7 @@ import { Briefcase, Circle, CheckCircle2, Clock, XCircle, Award } from "lucide-r
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { StaggerContainer, StaggerItem } from "@/components/StaggerContainer";
+import { ReviewDialog } from "@/components/ReviewDialog";
 
 const statusConfig: Record<string, { color: string; icon: any; pulse?: boolean }> = {
   applied: { color: "bg-muted text-muted-foreground", icon: Clock, pulse: true },
@@ -31,6 +32,7 @@ export default function StudentApplications() {
   const queryClient = useQueryClient();
   const [withdrawId, setWithdrawId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState("all");
+  const [reviewFor, setReviewFor] = useState<{ appId: string; ownerId: string; title: string } | null>(null);
 
   const { data: student } = useQuery({
     queryKey: ["student-profile", user?.id],
@@ -46,7 +48,7 @@ export default function StudentApplications() {
     queryFn: async () => {
       const { data } = await supabase
         .from("applications")
-        .select("*, internships(title, location, work_type, companies(name))")
+        .select("*, internships(title, location, work_type, companies(name, owner_id))")
         .eq("student_id", student!.id)
         .order("created_at", { ascending: false });
       return data ?? [];
@@ -150,6 +152,15 @@ export default function StudentApplications() {
                               Withdraw
                             </Button>
                           )}
+                          {app.status === "offered" && app.internships?.companies?.owner_id && (
+                            <Button variant="outline" size="sm" className="text-xs" onClick={() => setReviewFor({
+                              appId: app.id,
+                              ownerId: app.internships.companies.owner_id,
+                              title: app.internships?.companies?.name ?? "this employer",
+                            })}>
+                              <Award className="h-3 w-3 mr-1" /> Review
+                            </Button>
+                          )}
                           <Badge className={config.color}>{app.status}</Badge>
                         </div>
                       </CardContent>
@@ -174,6 +185,17 @@ export default function StudentApplications() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {reviewFor && (
+        <ReviewDialog
+          open={!!reviewFor}
+          onOpenChange={(o) => !o && setReviewFor(null)}
+          applicationId={reviewFor.appId}
+          subjectId={reviewFor.ownerId}
+          subjectRole="employer"
+          subjectName={reviewFor.title}
+        />
+      )}
     </DashboardLayout>
   );
 }

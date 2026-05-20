@@ -11,6 +11,7 @@ import { useParams, Link } from "react-router-dom";
 import { Github, Linkedin, Globe, ExternalLink, MapPin, GraduationCap, ArrowLeft, Download, Mail, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { StaggerContainer, StaggerItem } from "@/components/StaggerContainer";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
@@ -152,7 +153,7 @@ export default function StudentPublicProfile() {
                   )}
                 </div>
                 <div className="flex-1 text-center sm:text-left min-w-0">
-                  <h1 className="font-heading text-2xl sm:text-3xl font-bold">{fullName}</h1>
+                  <h1 className="font-heading text-2xl sm:text-3xl font-bold flex items-center gap-2 justify-center sm:justify-start">{fullName} <VerifiedBadge verified={(student as any).verified} kind="student" size="lg" /></h1>
                   {student.headline && <p className="text-muted-foreground mt-1 text-lg">{student.headline}</p>}
                   <div className="flex flex-wrap gap-3 mt-3 justify-center sm:justify-start">
                     {student.university && (
