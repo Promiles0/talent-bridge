@@ -522,6 +522,42 @@ export type Database = {
           },
         ]
       }
+      reviews: {
+        Row: {
+          application_id: string
+          author_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          subject_id: string
+          subject_role: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          author_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          subject_id: string
+          subject_role: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          author_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          subject_id?: string
+          subject_role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       saved_internships: {
         Row: {
           created_at: string | null
@@ -665,6 +701,8 @@ export type Database = {
           university: string | null
           updated_at: string
           user_id: string
+          verified: boolean
+          verified_at: string | null
         }
         Insert: {
           available?: boolean
@@ -681,6 +719,8 @@ export type Database = {
           university?: string | null
           updated_at?: string
           user_id: string
+          verified?: boolean
+          verified_at?: string | null
         }
         Update: {
           available?: boolean
@@ -697,6 +737,8 @@ export type Database = {
           university?: string | null
           updated_at?: string
           user_id?: string
+          verified?: boolean
+          verified_at?: string | null
         }
         Relationships: [
           {
@@ -750,6 +792,27 @@ export type Database = {
         }
         Relationships: []
       }
+      university_domains: {
+        Row: {
+          created_at: string
+          domain: string
+          id: string
+          university_name: string
+        }
+        Insert: {
+          created_at?: string
+          domain: string
+          id?: string
+          university_name: string
+        }
+        Update: {
+          created_at?: string
+          domain?: string
+          id?: string
+          university_name?: string
+        }
+        Relationships: []
+      }
       user_achievements: {
         Row: {
           achievement_id: string
@@ -800,6 +863,51 @@ export type Database = {
         }
         Relationships: []
       }
+      verifications: {
+        Row: {
+          created_at: string
+          evidence_data: Json | null
+          evidence_url: string | null
+          id: string
+          kind: string
+          method: string
+          notes: string | null
+          reviewed_at: string | null
+          reviewer_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          evidence_data?: Json | null
+          evidence_url?: string | null
+          id?: string
+          kind: string
+          method: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          evidence_data?: Json | null
+          evidence_url?: string | null
+          id?: string
+          kind?: string
+          method?: string
+          notes?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       xp_events: {
         Row: {
           created_at: string
@@ -829,7 +937,15 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      reputation_scores: {
+        Row: {
+          avg_rating: number | null
+          review_count: number | null
+          subject_role: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_role: {
