@@ -13,6 +13,9 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MeshGradient } from "@/components/MeshGradient";
+import { LiveStatsTicker } from "@/components/LiveStatsTicker";
+import { Marquee } from "@/components/Marquee";
 
 const valueProps = [
   { icon: GraduationCap, title: "For Students", desc: "Showcase your skills, build your portfolio, and land your dream internship." },
@@ -79,7 +82,18 @@ export default function Index() {
       <PageTransition>
         {/* Hero */}
         <section className="relative container mx-auto px-4 pt-20 pb-16 text-center section-hero">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
+          <MeshGradient />
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }} className="relative">
+            <motion.span
+              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs font-medium text-primary mb-6"
+            >
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+              </span>
+              Rwanda's #1 career network
+            </motion.span>
             <h1 className="font-heading text-4xl md:text-6xl font-bold tracking-tight mb-4">
               Discover <TypewriterEffect />
               <br />
@@ -90,7 +104,7 @@ export default function Index() {
             </p>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto mb-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="relative flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search internships..." className="pl-9 h-12 bg-card" />
@@ -104,7 +118,7 @@ export default function Index() {
             </Button>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }} className="flex justify-center gap-4">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }} className="relative flex justify-center gap-4 mb-12">
             <Link to="/signup">
               <Button size="lg" variant="outline" className="hover-scale">
                 Join as Student <ArrowRight className="ml-2 h-4 w-4" />
@@ -116,6 +130,22 @@ export default function Index() {
               </Button>
             </Link>
           </motion.div>
+
+          <div className="relative">
+            <LiveStatsTicker />
+          </div>
+        </section>
+
+        {/* Trusted by marquee */}
+        <section className="relative container mx-auto px-4 pb-10">
+          <p className="text-center text-xs uppercase tracking-widest text-muted-foreground mb-5">Trusted across Rwanda</p>
+          <Marquee speed={28}>
+            {["Bank of Kigali", "MTN Rwanda", "Andela", "Klab", "AC Group", "Irembo", "Equity Bank", "RwandAir", "Inkomoko", "BK TecHouse", "Zipline"].map((n) => (
+              <span key={n} className="text-base sm:text-lg font-heading font-semibold text-muted-foreground/70 hover:text-foreground transition-colors whitespace-nowrap">
+                {n}
+              </span>
+            ))}
+          </Marquee>
         </section>
 
         {/* Value props */}
