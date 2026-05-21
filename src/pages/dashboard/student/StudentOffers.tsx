@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { useState } from "react";
 import { FileSignature, Check, X, Printer } from "lucide-react";
+import { fireConfetti } from "@/lib/confetti";
 
 export default function StudentOffers() {
   const { user } = useAuth();
@@ -49,7 +50,7 @@ export default function StudentOffers() {
       }).eq("id", signOpen.id);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Offer accepted! 🎉"); setSignOpen(null); setSignature(""); qc.invalidateQueries({ queryKey: ["student-offers"] }); },
+    onSuccess: () => { fireConfetti({ count: 180 }); toast.success("Offer accepted! 🎉"); setSignOpen(null); setSignature(""); qc.invalidateQueries({ queryKey: ["student-offers"] }); },
     onError: (e: any) => toast.error(e.message),
   });
 

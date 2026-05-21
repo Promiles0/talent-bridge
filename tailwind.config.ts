@@ -113,6 +113,14 @@ export default {
           "0%, 100%": { transform: "translate(0,0) scale(0.95)" },
           "50%": { transform: "translate(4%, -5%) scale(1.1)" },
         },
+        "marquee": {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -124,6 +132,7 @@ export default {
         "aurora-1": "aurora-1 18s ease-in-out infinite",
         "aurora-2": "aurora-2 22s ease-in-out infinite",
         "aurora-3": "aurora-3 26s ease-in-out infinite",
+        "shimmer": "shimmer 2s linear infinite",
       },
     },
   },

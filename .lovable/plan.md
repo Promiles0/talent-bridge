@@ -1,123 +1,113 @@
 
-# Phase 15 — Trust, Hire & Grow
+# Site-Wide Enhancement Plan — Motion, Polish & Modern Features
 
-Combines all four next-phase options into one cohesive arc, sequenced so each batch builds on the previous. Trust ships first (it unlocks everything else), then the live hiring pipeline, then the university portal, then monetization on top.
-
----
-
-## Batch 1 — Verified Trust Layer
-
-The foundation. Without verification, reviews and paid tiers are worthless.
-
-**Database**
-- `verifications` — `id, user_id, kind (student|company), method (email_domain|id_upload|rdb), evidence_url, status (pending|approved|rejected), reviewer_id, reviewed_at, notes`
-- `reviews` — `id, application_id, author_id, subject_id, role (student|employer), rating (1-5), comment, created_at` (one per application per direction)
-- Extend `students` with `verified boolean`, `verified_at`. Extend `companies` already has `verified`.
-- `university_domains` seed table (`@ur.ac.rw`, `@aub.rw`, `@ines.ac.rw`, etc.) for auto-verification.
-- View `reputation_scores` aggregating average rating + count per user.
-
-**UI**
-- Student: "Get verified" card on profile → choose email-domain check (sends OTP to academic email) or ID upload to `cvs` bucket subfolder.
-- Employer: Verification tab in Branding Studio → RDB number + business email + logo proof.
-- Admin: `/dashboard/admin/verifications` queue with approve/reject + reason.
-- "Verified" badge component used on student cards, company pages, internship listings, message threads.
-- Internship board + Talent Search: "Verified only" filter (default ON for employers viewing students).
-- Post-completion review prompt (modal triggered when application status = `completed`).
-
-**Edge functions**
-- `verify-academic-email` — sends + validates OTP.
-- `verify-company` — light RDB lookup placeholder (manual admin step for now).
+Goal: make TalentBridge feel like a 2026 Awwwards-grade product without rebuilding features. Most of this is presentation, micro-interaction, and a few small but high-impact additions. Everything is shippable in small independent batches.
 
 ---
 
-## Batch 2 — Interview & Offer Pipeline
+## Batch A — Motion System (the foundation)
 
-Turns "shortlisted" into actual hires.
+Right now animations are scattered: some pages use framer-motion, others don't; transitions between routes are abrupt. Centralize it.
 
-**Database**
-- Extend `interview_slots` (already exists) with `student_response (pending|accepted|declined)`, `reschedule_reason`.
-- `offers` — `id, application_id, employer_id, student_id, start_date, end_date, stipend, terms, pdf_url, status (sent|accepted|declined|withdrawn), signed_at, signature_data jsonb`
-- `onboarding_tasks` — `id, offer_id, title, due_date, status, assignee`
-
-**UI**
-- Employer Applications: "Schedule interview" → proposes 3 slots → student picks one from a beautiful slot picker. Auto-creates `calendar_events` for both sides + email + notification.
-- Video room route `/interview/:slotId` using Daily.co iframe (BYO key via secret) with a side panel that:
-  - Shows the student's profile & CV for employer.
-  - Shows AI live-coaching tips for student (uses existing `ai-career-chat` with interview context).
-- Offer letter builder in employer dashboard: rich template → generates PDF (jsPDF) → stored in new `offers` storage bucket → student signs with typed/drawn signature → status flips to `accepted` → onboarding checklist auto-created.
-- Student Offers page `/dashboard/student/offers` with sign/decline flow.
-
-**Edge functions**
-- `interview-scheduler` — proposes slots, validates conflicts.
-- `offer-pdf-generate` — server-side PDF rendering.
+- **Global page transitions** — wrap `<Routes>` in `AnimatePresence` with a single fade-up + scale variant. Every navigation feels smooth.
+- **Shared layout transitions** — use `layoutId` on key elements (avatar in sidebar → opens to big avatar on profile; internship card title → hero title on detail page). Magic-move effect.
+- **Scroll-driven reveals** — replace ad-hoc `FadeInUp` with a single `<Reveal>` primitive using `useInView` + `whileInView`. Apply to every section on Index, About, How It Works, Internships list.
+- **Stagger everywhere** — list grids (internships, students, talent, applications, messages) cascade in 40 ms apart.
+- **Cursor follower** — subtle blurred dot following the cursor on desktop landing pages (Index, About). Reacts to hovering buttons/cards (scales up, tints).
+- **Scroll progress** — already have `ScrollProgressBar`; make it gradient and add a circular "back to top" that fills as you scroll.
+- **Reduced motion** — respect `prefers-reduced-motion`, gate the heavier effects.
 
 ---
 
-## Batch 3 — University Partner Portal
+## Batch B — Micro-Interactions
 
-New role unlocks B2B credibility and is the wedge for monetization.
+Small touches that make everything feel alive.
 
-**Database**
-- New enum value: `app_role = ... | 'university'`.
-- `universities` — `id, name, slug, domain, logo_url, hero_image_url, about, contact_email, verified`
-- `university_members` — `university_id, user_id, role (admin|staff)`
-- `university_endorsements` — `university_id, student_id, note, created_at`
-- Link students to universities via existing `students.university` text plus a new optional `university_id`.
-
-**UI**
-- New sidebar `UniversitySidebar.tsx` and dashboard at `/dashboard/university/*`:
-  - Overview: placement rate, top employers hiring our students, skill-gap heatmap by program, monthly active students.
-  - Students roster (filter, bulk-invite via CSV, endorse).
-  - Internships curated for our students (boost / pin to top of `/universities/:slug` page).
-  - Branding (logo, cover, story) → renders public co-branded landing `/universities/:slug`.
-- Signup flow: add "University" as a 4th role option, gated by admin approval initially.
-- Cross-link: student profiles show "Endorsed by University of Rwanda" badge.
+- **Magnetic buttons** on primary CTAs (Apply, Send, Save) — button drifts a few pixels toward the cursor.
+- **Tilt cards** — internship cards, company cards, bento cards get subtle 3D tilt on hover (no library, `transform: perspective`).
+- **Ripple on click** for all buttons (Material-style, themed to primary).
+- **Skeleton → content cross-fade** — current spinners replaced with skeleton shimmer matching the final layout (cards already exist, extend everywhere).
+- **Confetti** on Accept Offer, Verification Approved, Achievement Unlocked.
+- **Sound design (optional, opt-in)** — soft "tick" on message send, "ding" on notification (already have audio infra for notifications — extend).
+- **Number count-ups** — `useCountUp` already exists; apply to all dashboard KPIs (Overview tiles, Analytics, Admin metrics).
+- **Toast upgrade** — replace plain sonner with custom-styled toasts that slide in from bottom-right with icon + progress bar.
 
 ---
 
-## Batch 4 — Monetization & Plans
+## Batch C — Hero & Landing "Wow"
 
-Lands last, on top of verified employers + active hiring.
-
-**Integration**
-- Lovable's built-in Stripe payments (`enable_stripe_payments`).
-- Three employer tiers: **Free** (1 active internship, no AI talent search), **Pro** (unlimited internships, AI talent search, branding studio, shortlists), **Enterprise** (analytics export, priority support, university partnerships).
-- One university tier: **Partner** (annual subscription, unlocks full portal + co-branded page).
-
-**Database**
-- `subscriptions` mirror table (`user_id, tier, status, current_period_end, stripe_customer_id, stripe_subscription_id`).
-- `feature_flags` helper function `has_feature(_user_id, _feature_key)` used by RLS + UI gating.
-- Boost product: `featured_internships` (one-off purchase, internship pinned for 7 days).
-
-**UI**
-- `/pricing` public page (3 tiers + university tier).
-- `/dashboard/<role>/billing` — current plan, invoices, upgrade/downgrade.
-- Upgrade prompts on locked features (AI Talent Search empty state, Branding Studio editor, etc.).
-- Admin: revenue dashboard tile in `AdminOverview`.
-
-**Edge functions**
-- `stripe-checkout`, `stripe-customer-portal`, `stripe-webhook` (auto-generated by Lovable payments).
+- **Animated mesh-gradient hero** background (canvas or SVG with `feTurbulence`) instead of the current static gradient.
+- **Typewriter / word-cycling** in the H1 ("Find your **dream / first / next / paid** internship in Rwanda").
+- **Floating internship preview cards** in the hero — 3-4 mini cards drift and rotate gently behind/beside the headline.
+- **Marquee of partner companies/universities** — infinite scroll logo strip.
+- **Live stats ticker** ("237 internships open · 1.2k students hired · 89 verified employers") with count-up.
+- **Section dividers** — animated wave SVG between sections instead of hard cuts.
 
 ---
 
-## Technical Notes
+## Batch D — Dashboard Polish
 
-- Each batch is independently shippable; user can pause between any two.
-- Reuses existing infra: notifications, calendar, audit log, edge function patterns, BentoCard, AuroraBackground.
-- All new tables get RLS following the existing `has_role` + ownership patterns.
-- Email sending for OTP / interview invites / offers will use a new `RESEND_API_KEY` secret (will request when Batch 1 starts).
-- Daily.co for video rooms needs `DAILY_API_KEY` (request at Batch 2).
-- Stripe enabled via Lovable's built-in flow at Batch 4 (no secret to request).
+- **Command palette upgrade** — already exists; add recent items, grouped commands, fuzzy search, and ⌘K hint pill in navbar.
+- **Quick actions FAB** on every dashboard page (post internship / new application / start CV) — radial menu that fans out.
+- **Sidebar collapse animation** — width tween + label fade instead of snap.
+- **Tab indicators** — animated underline that slides between tabs (already partially in sidebar; extend to Applications filter chips, Settings tabs).
+- **Empty states** — illustrated, friendly, with one-click "add example data" or CTA. Replace bare "No data yet" text everywhere.
+- **Drag-to-reorder** — projects, CV sections, shortlists. Uses `framer-motion` Reorder.
+- **Kanban view** for Employer Applications (Applied → Shortlisted → Interview → Offered) with smooth card-drop animation. Toggle between List/Board view.
 
 ---
 
-## Execution order
+## Batch E — New Modern Features
+
+A small set of features that modern career platforms ship — high perceived value, mostly UI on top of existing data.
+
+1. **Global Command-K everywhere** — extend palette beyond navigation: "Apply to top match", "Message X", "Toggle dark mode".
+2. **Smart search with suggestions** — `/internships` search shows live dropdown (companies, skills, locations, recent searches). Fuzzy match.
+3. **Activity feed** on Student Overview — LinkedIn-style timeline (you applied, you got shortlisted, X viewed your profile, achievement unlocked).
+4. **Profile completion gamification** — circular progress ring on profile with "+10 XP" pop-ups when fields fill in.
+5. **Saved searches & alerts** — student saves a filter on `/internships`; gets a notification when matches appear.
+6. **Compare internships** — pick 2-3, side-by-side modal showing stipend, duration, location, perks.
+7. **Public share cards** — share-image-on-the-fly endpoint that renders OG images for internships and student profiles (Edge Function + canvas).
+8. **Dark / Light / System / "Aurora"** theme switcher with a smooth color-tween (already have ThemeProvider, add palette previews).
+9. **PWA + installable** — add manifest, service worker, offline shell, install prompt. "Add to home screen" on mobile.
+10. **Keyboard shortcuts overlay** — `?` opens a modal listing all shortcuts.
+
+---
+
+## Batch F — Performance & Accessibility (the invisible polish)
+
+- **Route-level code-splitting audit** — already lazy; ensure heavy charts/recharts/jspdf are dynamic-imported.
+- **Image optimization** — `<img loading="lazy" decoding="async">` everywhere; add blur-up placeholders for company logos and hero images.
+- **Prefetch on hover** — `<Link>` prefetches the route chunk when hovered.
+- **Focus rings** — themed, visible, non-ugly. Audit every interactive element.
+- **A11y pass** — aria-labels on icon-only buttons, skip-to-content link, landmark roles.
+- **Real Lighthouse run** — fix anything below 90.
+
+---
+
+## Suggested execution order
 
 ```text
-Batch 1  Trust       → ~3-4 turns
-Batch 2  Hire        → ~3-4 turns
-Batch 3  University  → ~3 turns
-Batch 4  Monetize    → ~2-3 turns
+A  Motion system        → 2 turns   (highest visual ROI)
+B  Micro-interactions   → 2 turns
+C  Hero & landing wow   → 2 turns
+D  Dashboard polish     → 2-3 turns
+E  Modern features      → pick 3-5, ~3 turns
+F  Perf & a11y          → 1 turn
 ```
 
-Reply **approve** to start with Batch 1 (Verified Trust Layer), or tell me to reorder / drop any batch.
+You don't need all of it. **Recommended starter set** if you want fast impact:
+**A (motion system) + C (hero wow) + D-empty-states + E#3 activity feed + E#4 profile gamification.**
+~5-6 turns and the whole product feels new.
+
+---
+
+## Question to you
+
+Three quick choices to lock the scope:
+
+1. **Which batches?** All six, or pick (A + C + chunk of D + 3 from E)?
+2. **From Batch E**, which features specifically? (My picks: command-K everywhere, activity feed, profile gamification, compare internships, PWA.)
+3. **Sound on by default or opt-in?** Modern but divisive.
+
+Reply with your picks (e.g. "A, C, D; E: 1, 3, 4, 9; sound opt-in") and I'll start building.

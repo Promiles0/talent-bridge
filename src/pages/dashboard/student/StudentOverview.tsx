@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { SkillTag } from "@/components/SkillTag";
 import { StaggerContainer, StaggerItem } from "@/components/StaggerContainer";
 import { isAISuggestionsEnabled } from "@/lib/notifications";
+import { ActivityFeed } from "@/components/ActivityFeed";
 
 function AnimatedCounter({ value }: { value: number }) {
   const count = useMotionValue(0);
@@ -353,6 +354,10 @@ export default function StudentOverview() {
             </CardContent>
           </Card>
         </StaggerItem>
+
+        {/* Activity feed */}
+        <StaggerItem><ActivityFeed limit={8} /></StaggerItem>
+
 
         {/* Career tip */}
         <StaggerItem>
