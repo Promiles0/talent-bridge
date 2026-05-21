@@ -61,6 +61,9 @@ const EmployerTalent = lazy(() => import("./pages/dashboard/employer/EmployerTal
 const EmployerBranding = lazy(() => import("./pages/dashboard/employer/EmployerBranding"));
 const AdminAudit = lazy(() => import("./pages/dashboard/admin/AdminAudit"));
 const AdminVerifications = lazy(() => import("./pages/dashboard/admin/AdminVerifications"));
+const StudentInterviews = lazy(() => import("./pages/dashboard/student/StudentInterviews"));
+const StudentOffers = lazy(() => import("./pages/dashboard/student/StudentOffers"));
+const OfferPrint = lazy(() => import("./pages/OfferPrint"));
 
 import { CommandPalette } from "@/components/CommandPalette";
 
@@ -106,6 +109,9 @@ const App = () => (
                 <Route path="/dashboard/student/achievements" element={<ProtectedRoute requiredRole="student"><StudentAchievements /></ProtectedRoute>} />
                 <Route path="/dashboard/student/skill-gap" element={<ProtectedRoute requiredRole="student"><StudentSkillGap /></ProtectedRoute>} />
                 <Route path="/dashboard/student/calendar" element={<ProtectedRoute requiredRole="student"><StudentCalendar /></ProtectedRoute>} />
+                <Route path="/dashboard/student/interviews" element={<ProtectedRoute requiredRole="student"><StudentInterviews /></ProtectedRoute>} />
+                <Route path="/dashboard/student/offers" element={<ProtectedRoute requiredRole="student"><StudentOffers /></ProtectedRoute>} />
+                <Route path="/offers/:id/print" element={<OfferPrint />} />
 
                 {/* Employer Dashboard */}
                 <Route path="/dashboard/employer" element={<ProtectedRoute requiredRole="employer"><EmployerOverview /></ProtectedRoute>} />

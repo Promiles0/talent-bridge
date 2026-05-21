@@ -339,8 +339,10 @@ export type Database = {
           location: string | null
           meeting_url: string | null
           notes: string | null
+          reschedule_reason: string | null
           start_at: string
           status: string
+          student_response: string
           updated_at: string
         }
         Insert: {
@@ -353,8 +355,10 @@ export type Database = {
           location?: string | null
           meeting_url?: string | null
           notes?: string | null
+          reschedule_reason?: string | null
           start_at: string
           status?: string
+          student_response?: string
           updated_at?: string
         }
         Update: {
@@ -367,8 +371,10 @@ export type Database = {
           location?: string | null
           meeting_url?: string | null
           notes?: string | null
+          reschedule_reason?: string | null
           start_at?: string
           status?: string
+          student_response?: string
           updated_at?: string
         }
         Relationships: []
@@ -432,6 +438,101 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      offers: {
+        Row: {
+          application_id: string
+          created_at: string
+          employer_id: string
+          end_date: string
+          id: string
+          internship_id: string
+          pdf_url: string | null
+          signature_data: Json | null
+          signed_at: string | null
+          start_date: string
+          status: string
+          stipend: string | null
+          student_id: string
+          terms: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          employer_id: string
+          end_date: string
+          id?: string
+          internship_id: string
+          pdf_url?: string | null
+          signature_data?: Json | null
+          signed_at?: string | null
+          start_date: string
+          status?: string
+          stipend?: string | null
+          student_id: string
+          terms: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          employer_id?: string
+          end_date?: string
+          id?: string
+          internship_id?: string
+          pdf_url?: string | null
+          signature_data?: Json | null
+          signed_at?: string | null
+          start_date?: string
+          status?: string
+          stipend?: string | null
+          student_id?: string
+          terms?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      onboarding_tasks: {
+        Row: {
+          assignee: string
+          created_at: string
+          due_date: string | null
+          id: string
+          offer_id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assignee?: string
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          offer_id: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assignee?: string
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          offer_id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_tasks_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       presence: {
         Row: {

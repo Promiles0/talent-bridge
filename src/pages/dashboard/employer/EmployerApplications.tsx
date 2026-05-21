@@ -12,10 +12,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { MessageSquare, Send, User, ChevronDown, Download } from "lucide-react";
+import { MessageSquare, Send, User, ChevronDown, Download, CalendarClock, FileSignature } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { SkillTag } from "@/components/SkillTag";
+import { InterviewScheduler } from "@/components/InterviewScheduler";
+import { OfferBuilder } from "@/components/OfferBuilder";
 
 export default function EmployerApplications() {
   const { user } = useAuth();
@@ -23,6 +25,8 @@ export default function EmployerApplications() {
   const [msgDialog, setMsgDialog] = useState<{ open: boolean; studentUserId: string; studentName: string }>({ open: false, studentUserId: "", studentName: "" });
   const [msgContent, setMsgContent] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [scheduleFor, setScheduleFor] = useState<{ appId: string; internshipId: string } | null>(null);
+  const [offerFor, setOfferFor] = useState<{ appId: string; internshipId: string; studentId: string; title: string } | null>(null);
 
   const { data: company } = useQuery({
     queryKey: ["company", user?.id],
@@ -198,6 +202,14 @@ export default function EmployerApplications() {
                             </a>
                           </Button>
                         )}
+                        <div className="flex gap-2 pt-2 border-t border-border">
+                          <Button variant="outline" size="sm" onClick={() => setScheduleFor({ appId: app.id, internshipId: app.internship_id })}>
+                            <CalendarClock className="h-3 w-3 mr-1" /> Schedule interview
+                          </Button>
+                          <Button size="sm" onClick={() => setOfferFor({ appId: app.id, internshipId: app.internship_id, studentId: app.student_id, title: app.internships?.title })}>
+                            <FileSignature className="h-3 w-3 mr-1" /> Send offer
+                          </Button>
+                        </div>
                       </CollapsibleContent>
                     </CardContent>
                   </Card>
@@ -231,6 +243,25 @@ export default function EmployerApplications() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {scheduleFor && (
+        <InterviewScheduler
+          open={!!scheduleFor}
+          onOpenChange={(o) => !o && setScheduleFor(null)}
+          applicationId={scheduleFor.appId}
+          internshipId={scheduleFor.internshipId}
+        />
+      )}
+      {offerFor && (
+        <OfferBuilder
+          open={!!offerFor}
+          onOpenChange={(o) => !o && setOfferFor(null)}
+          applicationId={offerFor.appId}
+          internshipId={offerFor.internshipId}
+          studentId={offerFor.studentId}
+          internshipTitle={offerFor.title}
+        />
+      )}
     </DashboardLayout>
   );
 }
