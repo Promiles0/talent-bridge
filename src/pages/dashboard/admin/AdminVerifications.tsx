@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ShieldCheck, Check, X, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { fireConfetti } from "@/lib/confetti";
 
 type Row = {
   id: string;
@@ -60,6 +61,7 @@ export default function AdminVerifications() {
       .eq("id", id);
     setBusyId(null);
     if (error) { toast.error(error.message); return; }
+    if (status === "approved") fireConfetti({ count: 100 });
     toast.success(`Verification ${status}`);
     await load();
   };
