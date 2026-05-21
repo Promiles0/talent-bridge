@@ -66,6 +66,9 @@ const StudentOffers = lazy(() => import("./pages/dashboard/student/StudentOffers
 const OfferPrint = lazy(() => import("./pages/OfferPrint"));
 
 import { CommandPalette } from "@/components/CommandPalette";
+import { CursorFollower } from "@/components/CursorFollower";
+import { BackToTop } from "@/components/BackToTop";
+import { ScrollProgressBar } from "@/components/ScrollProgressBar";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +81,9 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <ScrollToTop />
+            <ScrollProgressBar />
+            <CursorFollower />
+            <BackToTop />
             <CommandPalette />
             <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>}>
               <Routes>
