@@ -16,6 +16,7 @@ import { Upload, FileText, X, Camera, Plus, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { VerificationPanel } from "@/components/VerificationPanel";
 import { VerifiedBadge } from "@/components/VerifiedBadge";
+import { ProfileCompletionRing } from "@/components/ProfileCompletionRing";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
@@ -224,9 +225,16 @@ export default function StudentProfile() {
   return (
     <DashboardLayout sidebar={<StudentSidebar />} requiredRole="student">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl space-y-6">
-        <h1 className="font-heading text-2xl font-bold flex items-center gap-2">My Profile <VerifiedBadge verified={(student as any)?.verified} kind="student" size="md" /></h1>
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <h1 className="font-heading text-2xl font-bold flex items-center gap-2">My Profile <VerifiedBadge verified={(student as any)?.verified} kind="student" size="md" /></h1>
+          <ProfileCompletionRing percent={Math.round((
+            [!!profile?.full_name, !!student?.headline, !!student?.university, !!student?.bio,
+             (studentSkills?.length ?? 0) > 0, !!student?.github_url || !!student?.linkedin_url, !!student?.cv_url]
+            .filter(Boolean).length / 7) * 100)} size={96} />
+        </div>
 
         <VerificationPanel kind="student" alreadyVerified={(student as any)?.verified} />
+
 
 
         {/* Avatar & CV */}
