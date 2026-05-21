@@ -1,4 +1,4 @@
-import { Home, User, Briefcase, FolderKanban, MessageSquare, FileText, LogOut, Bookmark, Settings, Brain, Trophy, Target, CalendarDays } from "lucide-react";
+import { Home, User, Briefcase, FolderKanban, MessageSquare, FileText, LogOut, Bookmark, Settings, Brain, Trophy, Target, CalendarDays, CalendarClock, FileSignature } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,6 +24,8 @@ const items = [
   { title: "Overview", url: "/dashboard/student", icon: Home },
   { title: "Profile", url: "/dashboard/student/profile", icon: User },
   { title: "Applications", url: "/dashboard/student/applications", icon: Briefcase },
+  { title: "Interviews", url: "/dashboard/student/interviews", icon: CalendarClock },
+  { title: "Offers", url: "/dashboard/student/offers", icon: FileSignature },
   { title: "Saved", url: "/dashboard/student/saved", icon: Bookmark },
   { title: "Projects", url: "/dashboard/student/projects", icon: FolderKanban },
   { title: "Calendar", url: "/dashboard/student/calendar", icon: CalendarDays },
