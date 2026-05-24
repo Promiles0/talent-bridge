@@ -79,16 +79,41 @@ export function CommandPalette() {
   const { role, signOut, user } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
+  const jobsPath =
+    role === "employer" ? "/dashboard/employer/internships" :
+    role === "student" ? "/dashboard/student/applications" :
+    "/internships";
+  const offersPath =
+    role === "employer" ? "/dashboard/employer/applications" :
+    "/dashboard/student/offers";
+  const openNotifications = () => {
+    window.dispatchEvent(new CustomEvent("open-notifications"));
+  };
+
   useEffect(() => {
+    let lastG = 0;
     const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const typing = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+
       if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setOpen((o) => !o);
+        return;
+      }
+      if (typing) return;
+
+      // "g" then j/o/n leader shortcuts
+      if (e.key === "g") { lastG = Date.now(); return; }
+      if (Date.now() - lastG < 1200) {
+        if (e.key === "j") { e.preventDefault(); navigate(jobsPath); lastG = 0; }
+        else if (e.key === "o") { e.preventDefault(); navigate(offersPath); lastG = 0; }
+        else if (e.key === "n") { e.preventDefault(); openNotifications(); lastG = 0; }
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
+  }, [navigate, jobsPath, offersPath]);
 
   const go = (to: string) => {
     setOpen(false);
@@ -106,10 +131,30 @@ export function CommandPalette() {
       <CommandList>
         <CommandEmpty>No results.</CommandEmpty>
 
+        <CommandGroup heading="Quick jump">
+          <CommandItem keywords="jobs internships openings roles" onSelect={() => go(jobsPath)}>
+            <Briefcase className="mr-2 h-4 w-4" />
+            <span>Jobs</span>
+            <CommandShortcut>g j</CommandShortcut>
+          </CommandItem>
+          <CommandItem keywords="offers contracts signing letters" onSelect={() => go(offersPath)}>
+            <FileSignature className="mr-2 h-4 w-4" />
+            <span>Offers</span>
+            <CommandShortcut>g o</CommandShortcut>
+          </CommandItem>
+          <CommandItem keywords="notifications alerts inbox bell" onSelect={() => { setOpen(false); openNotifications(); }}>
+            <Bell className="mr-2 h-4 w-4" />
+            <span>Notifications</span>
+            <CommandShortcut>g n</CommandShortcut>
+          </CommandItem>
+        </CommandGroup>
+
+        <CommandSeparator />
+
         {roleNav.length > 0 && (
           <CommandGroup heading={`${role?.[0].toUpperCase()}${role?.slice(1)} dashboard`}>
             {roleNav.map((item) => (
-              <CommandItem key={item.to} onSelect={() => go(item.to)}>
+              <CommandItem key={item.to} keywords={item.keywords} onSelect={() => go(item.to)}>
                 <item.icon className="mr-2 h-4 w-4" />
                 <span>{item.label}</span>
               </CommandItem>
