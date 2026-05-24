@@ -28,6 +28,14 @@ export function NotificationBell() {
   const unreadCount = notifications.filter((n) => !n.read_at).length;
 
   useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("open-notifications", onOpen);
+    return () => window.removeEventListener("open-notifications", onOpen);
+  }, []);
+
+
+
+  useEffect(() => {
     if (!user) return;
 
     const fetchNotifications = async () => {
