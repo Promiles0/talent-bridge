@@ -133,17 +133,17 @@ export function CommandPalette() {
         <CommandEmpty>No results.</CommandEmpty>
 
         <CommandGroup heading="Quick jump">
-          <CommandItem keywords="jobs internships openings roles" onSelect={() => go(jobsPath)}>
+          <CommandItem keywords={["jobs internships openings roles"]} onSelect={() => go(jobsPath)}>
             <Briefcase className="mr-2 h-4 w-4" />
             <span>Jobs</span>
             <CommandShortcut>g j</CommandShortcut>
           </CommandItem>
-          <CommandItem keywords="offers contracts signing letters" onSelect={() => go(offersPath)}>
+          <CommandItem keywords={["offers contracts signing letters"]} onSelect={() => go(offersPath)}>
             <FileSignature className="mr-2 h-4 w-4" />
             <span>Offers</span>
             <CommandShortcut>g o</CommandShortcut>
           </CommandItem>
-          <CommandItem keywords="notifications alerts inbox bell" onSelect={() => { setOpen(false); openNotifications(); }}>
+          <CommandItem keywords={["notifications alerts inbox bell"]} onSelect={() => { setOpen(false); openNotifications(); }}>
             <Bell className="mr-2 h-4 w-4" />
             <span>Notifications</span>
             <CommandShortcut>g n</CommandShortcut>
