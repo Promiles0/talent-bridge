@@ -118,8 +118,12 @@ export default {
           to: { transform: "translateX(-50%)" },
         },
         "shimmer": {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
+          "0%": { transform: "translateX(-100%)", backgroundPosition: "-200% 0" },
+          "100%": { transform: "translateX(100%)", backgroundPosition: "200% 0" },
+        },
+        "ripple": {
+          "0%": { transform: "scale(0)", opacity: "0.6" },
+          "100%": { transform: "scale(1)", opacity: "0" },
         },
       },
       animation: {

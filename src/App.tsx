@@ -69,6 +69,7 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { CursorFollower } from "@/components/CursorFollower";
 import { BackToTop } from "@/components/BackToTop";
 import { ScrollProgressBar } from "@/components/ScrollProgressBar";
+import { CommandKHint } from "@/components/CommandKHint";
 
 const queryClient = new QueryClient();
 
@@ -85,6 +86,7 @@ const App = () => (
             <CursorFollower />
             <BackToTop />
             <CommandPalette />
+            <CommandKHint />
             <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
