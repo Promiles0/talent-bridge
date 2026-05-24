@@ -8,6 +8,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
+  CommandShortcut,
 } from "@/components/ui/command";
 import {
   Home, User, Briefcase, FolderKanban, MessageSquare, FileText,
@@ -22,7 +23,7 @@ interface NavItem {
   label: string;
   to: string;
   icon: React.ComponentType<{ className?: string }>;
-  keywords?: string;
+  keywords?: string[];
 }
 
 const studentNav: NavItem[] = [
