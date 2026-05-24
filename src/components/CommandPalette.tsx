@@ -13,6 +13,7 @@ import {
   Home, User, Briefcase, FolderKanban, MessageSquare, FileText,
   Bookmark, Settings, Brain, Building2, Users, BarChart3, Flag,
   Trophy, Sun, Moon, LogOut, Search, Target, CalendarDays, Sparkles, History,
+  Bell, FileSignature, CalendarCheck, ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/components/ThemeProvider";
@@ -28,8 +29,10 @@ const studentNav: NavItem[] = [
   { label: "Overview", to: "/dashboard/student", icon: Home },
   { label: "Profile", to: "/dashboard/student/profile", icon: User },
   { label: "Calendar", to: "/dashboard/student/calendar", icon: CalendarDays },
-  { label: "Applications", to: "/dashboard/student/applications", icon: Briefcase },
-  { label: "Saved Internships", to: "/dashboard/student/saved", icon: Bookmark },
+  { label: "Applications", to: "/dashboard/student/applications", icon: Briefcase, keywords: "jobs apply status" },
+  { label: "Saved Internships", to: "/dashboard/student/saved", icon: Bookmark, keywords: "jobs bookmarks" },
+  { label: "Interviews", to: "/dashboard/student/interviews", icon: CalendarCheck, keywords: "schedule slots" },
+  { label: "Offers", to: "/dashboard/student/offers", icon: FileSignature, keywords: "contract sign accept" },
   { label: "Projects", to: "/dashboard/student/projects", icon: FolderKanban },
   { label: "Messages", to: "/dashboard/student/messages", icon: MessageSquare },
   { label: "CV Builder", to: "/dashboard/student/cv-builder", icon: FileText },
@@ -44,8 +47,8 @@ const employerNav: NavItem[] = [
   { label: "Company", to: "/dashboard/employer/company", icon: Building2 },
   { label: "Branding Studio", to: "/dashboard/employer/branding", icon: Sparkles },
   { label: "Talent Search", to: "/dashboard/employer/talent", icon: Search },
-  { label: "Internships", to: "/dashboard/employer/internships", icon: Briefcase },
-  { label: "Applications", to: "/dashboard/employer/applications", icon: Users },
+  { label: "Internships (Jobs)", to: "/dashboard/employer/internships", icon: Briefcase, keywords: "jobs posts" },
+  { label: "Applications", to: "/dashboard/employer/applications", icon: Users, keywords: "candidates jobs offers interviews" },
   { label: "Analytics", to: "/dashboard/employer/analytics", icon: BarChart3 },
   { label: "Messages", to: "/dashboard/employer/messages", icon: MessageSquare },
   { label: "Settings", to: "/dashboard/employer/settings", icon: Settings },
@@ -54,6 +57,7 @@ const employerNav: NavItem[] = [
 const adminNav: NavItem[] = [
   { label: "Overview", to: "/dashboard/admin", icon: Home },
   { label: "Users", to: "/dashboard/admin/users", icon: Users },
+  { label: "Verifications", to: "/dashboard/admin/verifications", icon: ShieldCheck },
   { label: "Flags", to: "/dashboard/admin/flags", icon: Flag },
   { label: "Analytics", to: "/dashboard/admin/analytics", icon: BarChart3 },
   { label: "Content", to: "/dashboard/admin/content", icon: FileText },
@@ -63,7 +67,7 @@ const adminNav: NavItem[] = [
 
 const publicNav: NavItem[] = [
   { label: "Home", to: "/", icon: Home },
-  { label: "Browse Internships", to: "/internships", icon: Briefcase },
+  { label: "Browse Internships (Jobs)", to: "/internships", icon: Briefcase, keywords: "jobs roles openings" },
   { label: "Browse Students", to: "/students", icon: Users },
   { label: "How it works", to: "/how-it-works", icon: FileText },
   { label: "About", to: "/about", icon: User },
